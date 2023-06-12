@@ -68,26 +68,26 @@ public class ItemSelectionOverlay extends ItemSelSideBar<ItemSelectionOverlay.It
 
 	@Override
 	protected void renderEntry(Context ctx, ItemStack stack, int i, int selected) {
-		float y = 18 * i + ctx.y0();
-		renderSelection(ctx.x0(), y, 64, isAvailable(stack), selected == i);
+		int y = 18 * i + ctx.y0();
+		renderSelection(ctx.g(), ctx.x0(), y, 64, isAvailable(stack), selected == i);
 		if (ease_time == max_ease) {
-			TextBox box = new TextBox(ctx.width(), ctx.height(), 0, 1, (int) (ctx.x0() + 22), (int) (y + 8), -1);
-			box.renderLongText(ctx.gui(), ctx.pose(), List.of(stack.getHoverName()));
+			TextBox box = new TextBox(ctx.g(), 0, 1, ctx.x0() + 22, y + 8, -1);
+			box.renderLongText(ctx.font(), List.of(stack.getHoverName()));
 		}
-		ctx.renderItem(stack, (int) ctx.x0(), (int) y);
+		ctx.renderItem(stack, ctx.x0(), y);
 	}
 
-	protected float getXOffset(int width) {
+	protected int getXOffset(int width) {
 		float progress = (max_ease - ease_time) / max_ease;
-		return this.onCenter() ? width / 2f - 54 - 1 - progress * (float) width / 2.0F : 2 - progress * 20.0F;
+		return Math.round(this.onCenter() ? width / 2f - 54 - 1 - progress * (float) width / 2.0F : 2 - progress * 20.0F);
 	}
 
-	protected float getYOffset(int height) {
+	protected int getYOffset(int height) {
 		LocalPlayer player = Proxy.getClientPlayer();
 		assert player != null;
 		IItemSelector sel = IItemSelector.getSelection(player);
 		assert sel != null;
-		return height / 2f - 9 * sel.getList().size() + 1;
+		return Math.round(height / 2f - 9 * sel.getList().size() + 1);
 	}
 
 }
