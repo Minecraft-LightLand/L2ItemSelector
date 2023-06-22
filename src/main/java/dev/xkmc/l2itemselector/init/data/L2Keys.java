@@ -18,6 +18,6 @@ public enum L2Keys {
 		this.id = id;
 		this.def = def;
 		this.key = key;
-		this.map = new KeyMapping(id, key, "key.categories.l2library");
+		this.map = new KeyMapping(id, key, "key.categories.l2mods");
 	}
 }
