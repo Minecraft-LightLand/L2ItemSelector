@@ -1,8 +1,10 @@
 package dev.xkmc.l2itemselector.init;
 
+import dev.xkmc.l2itemselector.init.data.L2Keys;
 import dev.xkmc.l2itemselector.select.item.ItemSelectionOverlay;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -13,6 +15,13 @@ public class L2ItemSelectorClient {
 	@SubscribeEvent
 	public static void registerOverlays(RegisterGuiOverlaysEvent event) {
 		event.registerAbove(VanillaGuiOverlay.CROSSHAIR.id(), "tool_select", ItemSelectionOverlay.INSTANCE);
+	}
+
+	@SubscribeEvent
+	public static void registerKeyMaps(RegisterKeyMappingsEvent event) {
+		for (var e : L2Keys.values()) {
+			event.register(e.map);
+		}
 	}
 
 }
