@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -18,17 +19,32 @@ import net.minecraftforge.fml.common.Mod;
 public class ClientGeneralEventHandler {
 
 	@SubscribeEvent
-	public static void keyEvent(InputEvent.Key event) {
+	public static void inputEvent(GenericKeyEvent event) {
 		LocalPlayer player = Proxy.getClientPlayer();
 		if (player == null) return;
 		var sel = SelectionRegistry.getClientActiveListener(player);
 		if (sel.isEmpty()) return;
 		for (L2Keys k : L2Keys.values()) {
-			if (k.map.getKey().getValue() == event.getKey() && event.getAction() == InputConstants.PRESS) {
+			if (event.test(k.map.getKey()) &&
+					event.getAction() == InputConstants.PRESS) {
 				sel.get().handleClientKey(k, player);
 				return;
 			}
 		}
+	}
+
+	@SubscribeEvent
+	public static void mouseEvent(InputEvent.MouseButton.Pre event) {
+		MinecraftForge.EVENT_BUS.post(new GenericKeyEvent(e -> e.getType() == InputConstants.Type.MOUSE && e.getValue() == event.getButton(), event.getAction()));
+	}
+
+	@SubscribeEvent
+	public static void keyEvent(InputEvent.Key event) {
+		MinecraftForge.EVENT_BUS.post(new GenericKeyEvent(e -> e.getType() != InputConstants.Type.MOUSE && e.getValue() == event.getKey(), event.getAction()));
+		LocalPlayer player = Proxy.getClientPlayer();
+		if (player == null) return;
+		var sel = SelectionRegistry.getClientActiveListener(player);
+		if (sel.isEmpty()) return;
 		for (int i = 0; i < 9; i++) {
 			if (sel.get().handleClientNumericKey(i, Minecraft.getInstance().options.keyHotbarSlots[i]::consumeClick)) {
 				return;
