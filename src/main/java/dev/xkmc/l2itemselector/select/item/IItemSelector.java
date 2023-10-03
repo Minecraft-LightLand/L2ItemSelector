@@ -10,6 +10,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -79,7 +80,15 @@ public abstract class IItemSelector {
 	public abstract List<ItemStack> getList();
 
 	public List<ItemStack> getDisplayList() {
-		return getList();
+		List<ItemStack> ans = new ArrayList<>();
+		for (ItemStack stack : getList()) {
+			if (stack.getItem() instanceof CustomDisplaySelectItem item) {
+				ans.add(item.getDisplay(id, stack));
+			} else {
+				ans.add(stack);
+			}
+		}
+		return ans;
 	}
 
 	public ResourceLocation getID() {
