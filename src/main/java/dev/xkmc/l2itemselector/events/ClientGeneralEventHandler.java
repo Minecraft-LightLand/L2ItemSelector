@@ -5,7 +5,6 @@ import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
 import dev.xkmc.l2itemselector.select.SelectionRegistry;
 import dev.xkmc.l2library.init.L2LibraryConfig;
-import dev.xkmc.l2library.init.events.FineScrollEvent;
 import dev.xkmc.l2library.util.Proxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -53,8 +52,17 @@ public class ClientGeneralEventHandler {
 
 	}
 
+	private static double scroll;
+
 	@SubscribeEvent
-	public static void fineScroll(FineScrollEvent event) {
+	public static void scrollEvent(InputEvent.MouseScrollingEvent event) {
+		double d0 = event.getScrollDelta();
+		scroll += d0;
+		int i = (int) scroll;
+		if (i == 0) {
+			return;
+		}
+		scroll -= i;
 		LocalPlayer player = Proxy.getClientPlayer();
 		if (player == null) return;
 		var sel = SelectionRegistry.getClientActiveListener(player);
@@ -62,7 +70,7 @@ public class ClientGeneralEventHandler {
 		if (!sel.get().scrollBypassShift() &&
 				L2LibraryConfig.CLIENT.selectionScrollRequireShift.get() &&
 				!player.isShiftKeyDown()) return;
-		if (sel.get().handleClientScroll(event.diff, player)) {
+		if (sel.get().handleClientScroll((int) Math.signum(i), player)) {
 			event.setCanceled(true);
 		}
 	}

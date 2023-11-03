@@ -38,7 +38,7 @@ public class ItemSelectionListener implements ISelectionListener {
 	public boolean handleClientScroll(int diff, Player player) {
 		IItemSelector sel = IItemSelector.getSelection(player);
 		if (sel == null) return false;
-		toServer(sel.move(diff, player));
+		toServer(sel.move(-diff, player));
 		return true;
 	}
 
