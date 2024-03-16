@@ -34,7 +34,7 @@ public class L2ItemSelector {
 
 	public L2ItemSelector() {
 		L2ISConfig.init();
-		SelectionRegistry.register(0, ItemSelectionListener.INSTANCE);
+		SelectionRegistry.register(-2000, ItemSelectionListener.INSTANCE);
 		REGISTRATE.addDataGenerator(ProviderType.LANG, L2ISLangData::genLang);
 		REGISTRATE.addDataGenerator(ProviderType.ITEM_TAGS, L2ISTagGen::genItemTags);
 	}
