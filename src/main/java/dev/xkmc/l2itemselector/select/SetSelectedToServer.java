@@ -1,8 +1,8 @@
 package dev.xkmc.l2itemselector.select;
 
+import dev.xkmc.l2itemselector.init.data.L2Keys;
 import dev.xkmc.l2serial.network.SerialPacketBase;
 import dev.xkmc.l2serial.serialization.SerialClass;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent.Context;
@@ -29,9 +29,9 @@ public class SetSelectedToServer extends SerialPacketBase {
 	public SetSelectedToServer(ISelectionListener sel, int slot) {
 		this.name = sel.getID();
 		this.slot = slot;
-		this.isCtrlDown = Screen.hasControlDown();
-		this.isAltDown = Screen.hasAltDown();
-		this.isShiftDown = Screen.hasShiftDown();
+		this.isCtrlDown = L2Keys.hasCtrlDown();
+		this.isAltDown = L2Keys.hasAltDown();
+		this.isShiftDown = L2Keys.hasShiftDown();
 	}
 
 	public void handle(Context ctx) {

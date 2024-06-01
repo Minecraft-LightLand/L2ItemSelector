@@ -4,5 +4,7 @@
   "key.l2mods.left": "选择-左",
   "key.l2mods.right": "选择-右",
   "key.l2mods.swap": "选择-确定",
-  "key.l2mods.up": "选择-上"
+  "key.l2mods.up": "选择-上",
+  "keu.l2mods.alt": "切换选择器",
+  "keu.l2mods.shift": "显示选择器"
 }
