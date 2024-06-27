@@ -17,7 +17,7 @@ public class ItemSelectionOverlay extends ItemSelSideBar<ItemSelectionOverlay.It
 
 	public static final ItemSelectionOverlay INSTANCE = new ItemSelectionOverlay();
 
-	private static final ResourceLocation EMPTY = new ResourceLocation("empty");
+	private static final ResourceLocation EMPTY =  ResourceLocation.withDefaultNamespace("empty");
 
 	public record ItemSelSignature(ResourceLocation id, int val) implements Signature<ItemSelSignature> {
 

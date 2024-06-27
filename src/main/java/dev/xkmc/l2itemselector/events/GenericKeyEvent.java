@@ -1,7 +1,7 @@
 package dev.xkmc.l2itemselector.events;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraftforge.eventbus.api.Event;
+import net.neoforged.bus.api.Event;
 
 import java.util.function.Predicate;
 

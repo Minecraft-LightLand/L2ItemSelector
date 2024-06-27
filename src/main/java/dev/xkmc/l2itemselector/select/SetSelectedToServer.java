@@ -2,44 +2,24 @@ package dev.xkmc.l2itemselector.select;
 
 import dev.xkmc.l2itemselector.init.data.L2Keys;
 import dev.xkmc.l2serial.network.SerialPacketBase;
-import dev.xkmc.l2serial.serialization.SerialClass;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.network.NetworkEvent.Context;
 
-@SerialClass
-public class SetSelectedToServer extends SerialPacketBase {
+public record SetSelectedToServer(
+		int slot,
+		ResourceLocation name,
+		boolean isCtrlDown, boolean isAltDown, boolean isShiftDown
+) implements SerialPacketBase<SetSelectedToServer> {
 
-	@SerialClass.SerialField
-	public int slot;
-
-	@SerialClass.SerialField
-	public ResourceLocation name;
-
-	@SerialClass.SerialField
-	public boolean isCtrlDown, isAltDown, isShiftDown;
-
-	/**
-	 * @deprecated
-	 */
-	@Deprecated
-	public SetSelectedToServer() {
+	public static SetSelectedToServer of(int slot, ResourceLocation name) {
+		return new SetSelectedToServer(slot, name, L2Keys.hasCtrlDown(), L2Keys.hasAltDown(), L2Keys.hasShiftDown());
 	}
 
-	public SetSelectedToServer(ISelectionListener sel, int slot) {
-		this.name = sel.getID();
-		this.slot = slot;
-		this.isCtrlDown = L2Keys.hasCtrlDown();
-		this.isAltDown = L2Keys.hasAltDown();
-		this.isShiftDown = L2Keys.hasShiftDown();
-	}
-
-	public void handle(Context ctx) {
-		Player sender = ctx.getSender();
-		if (sender == null) return;
+	@Override
+	public void handle(Player player) {
 		var sel = SelectionRegistry.getEntry(name);
 		if (sel == null) return;
-		sel.handleServerSetSelection(this, sender);
+		sel.handleServerSetSelection(this, player);
 	}
 
 }

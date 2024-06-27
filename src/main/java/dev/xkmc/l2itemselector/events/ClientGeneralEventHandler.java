@@ -1,20 +1,20 @@
 package dev.xkmc.l2itemselector.events;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import dev.xkmc.l2core.util.Proxy;
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
 import dev.xkmc.l2itemselector.select.SelectionRegistry;
 import dev.xkmc.l2library.init.L2LibraryConfig;
-import dev.xkmc.l2library.util.Proxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
-@Mod.EventBusSubscriber(value = Dist.CLIENT, modid = L2ItemSelector.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@EventBusSubscriber(value = Dist.CLIENT, modid = L2ItemSelector.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class ClientGeneralEventHandler {
 
 	@SubscribeEvent
@@ -34,12 +34,12 @@ public class ClientGeneralEventHandler {
 
 	@SubscribeEvent
 	public static void mouseEvent(InputEvent.MouseButton.Pre event) {
-		MinecraftForge.EVENT_BUS.post(new GenericKeyEvent(e -> e.getType() == InputConstants.Type.MOUSE && e.getValue() == event.getButton(), event.getAction()));
+		NeoForge.EVENT_BUS.post(new GenericKeyEvent(e -> e.getType() == InputConstants.Type.MOUSE && e.getValue() == event.getButton(), event.getAction()));
 	}
 
 	@SubscribeEvent
 	public static void keyEvent(InputEvent.Key event) {
-		MinecraftForge.EVENT_BUS.post(new GenericKeyEvent(e -> e.getType() != InputConstants.Type.MOUSE && e.getValue() == event.getKey(), event.getAction()));
+		NeoForge.EVENT_BUS.post(new GenericKeyEvent(e -> e.getType() != InputConstants.Type.MOUSE && e.getValue() == event.getKey(), event.getAction()));
 		LocalPlayer player = Proxy.getClientPlayer();
 		if (player == null) return;
 		var sel = SelectionRegistry.getClientActiveListener(player);
