@@ -26,7 +26,7 @@ public interface ISelectionListener {
 	}
 
 	default void toServer(int slot) {
-		L2ItemSelector.PACKET_HANDLER.toServer(new SetSelectedToServer(this, slot));
+		L2ItemSelector.PACKET_HANDLER.toServer(SetSelectedToServer.of(slot, getID()));
 	}
 
 }

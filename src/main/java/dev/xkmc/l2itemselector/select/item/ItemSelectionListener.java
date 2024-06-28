@@ -17,7 +17,7 @@ public class ItemSelectionListener implements ISelectionListener {
 
 	@Override
 	public ResourceLocation getID() {
-		return new ResourceLocation(L2ItemSelector.MODID, "item");
+		return L2ItemSelector.loc("item");
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class ItemSelectionListener implements ISelectionListener {
 	public void handleServerSetSelection(SetSelectedToServer packet, Player sender) {
 		IItemSelector sel = IItemSelector.getSelection(sender);
 		if (sel != null) {
-			sel.swap(sender, packet.slot);
+			sel.swap(sender, packet.slot());
 		}
 	}
 

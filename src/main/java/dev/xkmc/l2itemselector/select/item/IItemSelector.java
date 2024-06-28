@@ -1,13 +1,13 @@
 package dev.xkmc.l2itemselector.select.item;
 
+import dev.xkmc.l2core.util.ServerOnly;
 import dev.xkmc.l2itemselector.init.data.L2ISTagGen;
-import dev.xkmc.l2library.util.annotation.ServerOnly;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;

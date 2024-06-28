@@ -1,13 +1,13 @@
 package dev.xkmc.l2itemselector.select.item;
 
+import dev.xkmc.l2core.serial.config.BaseConfig;
+import dev.xkmc.l2core.serial.config.CollectType;
+import dev.xkmc.l2core.serial.config.ConfigCollect;
 import dev.xkmc.l2core.util.DataGenOnly;
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2ISTagGen;
-import dev.xkmc.l2library.serial.config.BaseConfig;
-import dev.xkmc.l2library.serial.config.CollectType;
-import dev.xkmc.l2library.serial.config.ConfigCollect;
-import dev.xkmc.l2library.util.annotation.DataGenOnly;
-import dev.xkmc.l2serial.serialization.SerialClass;
+import dev.xkmc.l2serial.serialization.marker.SerialClass;
+import dev.xkmc.l2serial.serialization.marker.SerialField;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +27,7 @@ public class SimpleItemSelectConfig extends BaseConfig {
 	}
 
 	@ConfigCollect(CollectType.MAP_COLLECT)
-	@SerialClass.SerialField
+	@SerialField
 	public final HashMap<ResourceLocation, ArrayList<Item>> map = new HashMap<>();
 
 	private HashMap<Item, ItemSelector> cache;

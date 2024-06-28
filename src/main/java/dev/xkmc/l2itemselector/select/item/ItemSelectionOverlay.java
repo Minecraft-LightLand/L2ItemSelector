@@ -1,11 +1,10 @@
 package dev.xkmc.l2itemselector.select.item;
 
 import com.mojang.datafixers.util.Pair;
-import dev.xkmc.l2itemselector.init.data.L2Keys;
-import dev.xkmc.l2library.base.overlay.ItemSelSideBar;
-import dev.xkmc.l2library.base.overlay.SideBar;
-import dev.xkmc.l2library.base.overlay.TextBox;
-import dev.xkmc.l2library.util.Proxy;
+import dev.xkmc.l2core.util.Proxy;
+import dev.xkmc.l2itemselector.overlay.ItemSelSideBar;
+import dev.xkmc.l2itemselector.overlay.SideBar;
+import dev.xkmc.l2itemselector.overlay.TextBox;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -17,7 +16,7 @@ public class ItemSelectionOverlay extends ItemSelSideBar<ItemSelectionOverlay.It
 
 	public static final ItemSelectionOverlay INSTANCE = new ItemSelectionOverlay();
 
-	private static final ResourceLocation EMPTY =  ResourceLocation.withDefaultNamespace("empty");
+	private static final ResourceLocation EMPTY = ResourceLocation.withDefaultNamespace("empty");
 
 	public record ItemSelSignature(ResourceLocation id, int val) implements Signature<ItemSelSignature> {
 
@@ -49,11 +48,6 @@ public class ItemSelectionOverlay extends ItemSelSideBar<ItemSelectionOverlay.It
 	@Override
 	public boolean onCenter() {
 		return false;
-	}
-
-	@Override
-	protected boolean isOnHold() {
-		return L2Keys.hasShiftDown();
 	}
 
 	@Override
