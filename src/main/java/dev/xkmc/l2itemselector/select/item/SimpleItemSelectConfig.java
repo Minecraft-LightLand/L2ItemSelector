@@ -1,5 +1,6 @@
 package dev.xkmc.l2itemselector.select.item;
 
+import dev.xkmc.l2core.util.DataGenOnly;
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2ISTagGen;
 import dev.xkmc.l2library.serial.config.BaseConfig;

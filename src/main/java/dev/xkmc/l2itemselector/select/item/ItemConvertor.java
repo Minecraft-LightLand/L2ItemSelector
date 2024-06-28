@@ -4,9 +4,6 @@ import dev.xkmc.l2itemselector.init.data.L2ISTagGen;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.neoforged.bus.api.SubscribeEvent;
 
 import java.util.List;
 
@@ -60,16 +57,6 @@ public class ItemConvertor {
 		ItemStack result = found.copy();
 		result.setCount(stack.getCount());
 		return result;
-	}
-
-	@SubscribeEvent
-	public static void addItemToInventory(EntityItemPickupEvent event) {
-		ItemStack prev = event.getItem().getItem();
-		ItemStack next = convert(prev, event.getEntity());
-		if (next != prev) {
-			event.getItem().setItem(next);
-			event.setCanceled(true);
-		}
 	}
 
 }

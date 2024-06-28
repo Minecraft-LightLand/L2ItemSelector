@@ -9,21 +9,15 @@ import dev.xkmc.l2itemselector.select.SelectionRegistry;
 import dev.xkmc.l2itemselector.select.SetSelectedToServer;
 import dev.xkmc.l2itemselector.select.item.ItemSelectionListener;
 import dev.xkmc.l2itemselector.select.item.SimpleItemSelectConfig;
-import dev.xkmc.l2library.base.L2Registrate;
 import dev.xkmc.l2library.serial.config.ConfigTypeEntry;
-import dev.xkmc.l2library.serial.config.PacketHandlerWithConfig;
 import dev.xkmc.l2serial.network.PacketHandler;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
 import static dev.xkmc.l2serial.network.PacketHandler.NetDir.PLAY_TO_SERVER;
-import static net.minecraftforge.network.NetworkDirection.PLAY_TO_SERVER;
 
 @Mod(L2ItemSelector.MODID)
 @EventBusSubscriber(modid = L2ItemSelector.MODID, bus = EventBusSubscriber.Bus.MOD)
@@ -33,7 +27,7 @@ public class L2ItemSelector {
 
 	public static final L2Registrate REGISTRATE = new L2Registrate(MODID);
 
-	public static final PacketHandler PACKET_HANDLER = new PacketHandler(MODID,  1,
+	public static final PacketHandler PACKET_HANDLER = new PacketHandler(MODID, 1,
 			e -> e.create(SetSelectedToServer.class, PLAY_TO_SERVER));
 
 	public static final ConfigTypeEntry<SimpleItemSelectConfig> ITEM_SELECTOR =
@@ -48,6 +42,10 @@ public class L2ItemSelector {
 
 	@SubscribeEvent
 	public static void gatherData(GatherDataEvent event) {
+	}
+
+	public static ResourceLocation loc(String id) {
+		return ResourceLocation.fromNamespaceAndPath(MODID, id);
 	}
 
 }

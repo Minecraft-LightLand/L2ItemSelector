@@ -3,9 +3,9 @@ package dev.xkmc.l2itemselector.events;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.xkmc.l2core.util.Proxy;
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
+import dev.xkmc.l2itemselector.init.data.L2ISConfig;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
 import dev.xkmc.l2itemselector.select.SelectionRegistry;
-import dev.xkmc.l2library.init.L2LibraryConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.neoforged.api.distmarker.Dist;
@@ -56,7 +56,7 @@ public class ClientGeneralEventHandler {
 
 	@SubscribeEvent
 	public static void scrollEvent(InputEvent.MouseScrollingEvent event) {
-		double d0 = event.getScrollDelta();
+		double d0 = event.getScrollDeltaY();
 		scroll += d0;
 		int i = (int) scroll;
 		if (i == 0) {
@@ -68,7 +68,7 @@ public class ClientGeneralEventHandler {
 		var sel = SelectionRegistry.getClientActiveListener(player);
 		if (sel.isEmpty()) return;
 		if (!sel.get().scrollBypassShift() &&
-				L2LibraryConfig.CLIENT.selectionScrollRequireShift.get() &&
+				L2ISConfig.CLIENT.selectionScrollRequireShift.get() &&
 				!player.isShiftKeyDown()) return;
 		if (sel.get().handleClientScroll((int) Math.signum(i), player)) {
 			event.setCanceled(true);
