@@ -147,7 +147,6 @@ dependencies {
     implementation "com.tterrag.registrate:Registrate:${registrate_version}"
     implementation "dev.xkmc:l2serial:${l2serial_ver}"
     implementation "dev.xkmc:l2core:${l2core_ver}"
-    implementation "dev.xkmc:l2tabs:${l2tabs_ver}"
 
     implementation "top.theillusivec4.curios:curios-neoforge:${curios_version}"
 }
