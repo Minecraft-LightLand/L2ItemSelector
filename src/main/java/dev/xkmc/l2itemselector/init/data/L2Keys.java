@@ -10,8 +10,8 @@ public enum L2Keys {
 	LEFT("key.l2mods.left", "Left", GLFW.GLFW_KEY_LEFT),
 	RIGHT("key.l2mods.right", "Right", GLFW.GLFW_KEY_RIGHT),
 	SWAP("key.l2mods.swap", "Swap", GLFW.GLFW_KEY_R),
-	SHIFT("keu.l2mods.shift", "Hold Selection", GLFW.GLFW_KEY_LEFT_SHIFT),
-	ALT("keu.l2mods.alt", "Alternative Selector", GLFW.GLFW_KEY_LEFT_ALT);
+	SHIFT("key.l2mods.shift", "Hold Selection", GLFW.GLFW_KEY_LEFT_SHIFT),
+	ALT("key.l2mods.alt", "Alternative Selector", GLFW.GLFW_KEY_LEFT_ALT);
 
 	public static boolean hasShiftDown() {
 		return SHIFT.map.isDown();
