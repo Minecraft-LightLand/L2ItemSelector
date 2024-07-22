@@ -45,7 +45,7 @@ public class ItemConvertor {
 			return stack;
 		}
 		Inventory inv = player.getInventory();
-		List<ItemStack> list = ans.getList();
+		List<ItemStack> list = ans.getList(stack);
 		ItemStack old = find(List.of(stack), inv);
 		if (!old.isEmpty()) {
 			return stack;

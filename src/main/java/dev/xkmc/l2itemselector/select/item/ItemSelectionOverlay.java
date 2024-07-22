@@ -18,7 +18,7 @@ public class ItemSelectionOverlay extends ItemSelSideBar<ItemSelectionOverlay.It
 
 	private static final ResourceLocation EMPTY = ResourceLocation.withDefaultNamespace("empty");
 
-	public record ItemSelSignature(ResourceLocation id, int val) implements Signature<ItemSelSignature> {
+	public record ItemSelSignature(ResourceLocation id, int val, int hash) implements Signature<ItemSelSignature> {
 
 		@Override
 		public boolean shouldRefreshIdle(SideBar<?> sideBar, @Nullable ItemSelectionOverlay.ItemSelSignature old) {
@@ -35,7 +35,7 @@ public class ItemSelectionOverlay extends ItemSelSideBar<ItemSelectionOverlay.It
 	public Pair<List<ItemStack>, Integer> getItems() {
 		LocalPlayer player = Proxy.getClientPlayer();
 		if (player == null) return Pair.of(List.of(), 0);
-		IItemSelector sel = IItemSelector.getSelection(player);
+		var sel = IItemSelector.getSelection(player);
 		assert sel != null;
 		return Pair.of(sel.getDisplayList(), sel.getIndex(player));
 	}
@@ -53,10 +53,10 @@ public class ItemSelectionOverlay extends ItemSelSideBar<ItemSelectionOverlay.It
 	@Override
 	public ItemSelSignature getSignature() {
 		LocalPlayer player = Proxy.getClientPlayer();
-		if (player == null) return new ItemSelSignature(EMPTY, 0);
-		IItemSelector sel = IItemSelector.getSelection(Proxy.getClientPlayer());
-		if (sel == null) return new ItemSelSignature(EMPTY, 0);
-		return new ItemSelSignature(sel.getID(), sel.getIndex(player));
+		if (player == null) return new ItemSelSignature(EMPTY, 0, 0);
+		var sel = IItemSelector.getSelection(Proxy.getClientPlayer());
+		if (sel == null) return new ItemSelSignature(EMPTY, 0, 0);
+		return new ItemSelSignature(sel.selector().getID(), sel.getIndex(player), sel.getSelHash());
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public class ItemSelectionOverlay extends ItemSelSideBar<ItemSelectionOverlay.It
 	protected int getYOffset(int height) {
 		LocalPlayer player = Proxy.getClientPlayer();
 		assert player != null;
-		IItemSelector sel = IItemSelector.getSelection(player);
+		var sel = IItemSelector.getSelection(player);
 		assert sel != null;
 		return Math.round(height / 2f - 9 * sel.getList().size() + 1);
 	}

@@ -11,6 +11,10 @@ import java.util.List;
 
 public abstract class InfoSideBar<S extends SideBar.Signature<S>> extends SideBar<S> implements LayeredDraw.Layer {
 
+	public enum Anchor {
+		TOP, CENTER, BOTTOM
+	}
+
 	public InfoSideBar(float duration, float ease) {
 		super(duration, ease);
 	}
@@ -24,7 +28,7 @@ public abstract class InfoSideBar<S extends SideBar.Signature<S>> extends SideBa
 		if (!ease(pt)) return;
 		var text = getText();
 		if (text.isEmpty()) return;
-		int anchor = L2ISConfig.CLIENT.infoAnchor.get();
+		int anchor = L2ISConfig.CLIENT.infoAnchor.get().ordinal();
 		int y = height * anchor / 2;
 		int w = (int) (width * L2ISConfig.CLIENT.infoMaxWidth.get());
 		new TextBox(g, 0, anchor, getXOffset(width), y, w)

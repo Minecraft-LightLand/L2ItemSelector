@@ -30,7 +30,7 @@ public enum L2ISLangData {
 		for (L2Keys lang : L2Keys.values()) {
 			pvd.add(lang.id, lang.def);
 		}
-		pvd.add("key.categories.l2mods", "L2Mods Keys");
+		pvd.add("key.categories.l2mods", "Keybinds for L2 Mods");
 	}
 
 }

@@ -24,13 +24,13 @@ public class ItemSelectionListener implements ISelectionListener {
 	public boolean isClientActive(Player player) {
 		if (Minecraft.getInstance().screen != null) return false;
 		if (Screen.hasAltDown()) return false;
-		IItemSelector sel = IItemSelector.getSelection(player);
+		var sel = IItemSelector.getSelection(player);
 		return sel != null;
 	}
 
 	@Override
 	public void handleServerSetSelection(SetSelectedToServer packet, Player sender) {
-		IItemSelector sel = IItemSelector.getSelection(sender);
+		var sel = IItemSelector.getSelection(sender);
 		if (sel != null) {
 			sel.swap(sender, packet.slot());
 		}
@@ -38,7 +38,7 @@ public class ItemSelectionListener implements ISelectionListener {
 
 	@Override
 	public boolean handleClientScroll(int diff, Player player) {
-		IItemSelector sel = IItemSelector.getSelection(player);
+		var sel = IItemSelector.getSelection(player);
 		if (sel == null) return false;
 		toServer(sel.move(-diff, player));
 		return true;
@@ -46,7 +46,7 @@ public class ItemSelectionListener implements ISelectionListener {
 
 	@Override
 	public void handleClientKey(L2Keys key, Player player) {
-		IItemSelector sel = IItemSelector.getSelection(player);
+		var sel = IItemSelector.getSelection(player);
 		if (sel == null) return;
 		if (key == L2Keys.UP) {
 			toServer(sel.move(-1, player));

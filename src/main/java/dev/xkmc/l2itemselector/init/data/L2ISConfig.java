@@ -1,78 +1,45 @@
 package dev.xkmc.l2itemselector.init.data;
 
-import net.neoforged.fml.ModLoadingContext;
-import net.neoforged.fml.config.IConfigSpec;
-import net.neoforged.fml.config.ModConfig;
+import dev.xkmc.l2core.util.ConfigInit;
+import dev.xkmc.l2itemselector.init.L2ItemSelector;
+import dev.xkmc.l2itemselector.overlay.InfoSideBar;
 import net.neoforged.neoforge.common.ModConfigSpec;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class L2ISConfig {
 
-	public static class Client {
+	public static class Client extends ConfigInit {
 
 		public final ModConfigSpec.DoubleValue infoAlpha;
-		public final ModConfigSpec.IntValue infoAnchor;
+		public final ModConfigSpec.EnumValue<InfoSideBar.Anchor> infoAnchor;
 		public final ModConfigSpec.DoubleValue infoMaxWidth;
 
 		public final ModConfigSpec.BooleanValue selectionDisplayRequireShift;
 		public final ModConfigSpec.BooleanValue selectionScrollRequireShift;
 
 
-		Client(ModConfigSpec.Builder builder) {
-			infoAlpha = builder.comment("Info background transparency. 1 means opaque.")
+		Client(Builder builder) {
+			markL2();
+			infoAlpha = builder.text("Info box background transparency")
+					.comment("Background transparency for info text box overlay. 1 means opaque.")
 					.defineInRange("infoAlpha", 0.5, 0, 1);
-			infoAnchor = builder.comment("Info alignment. 0 means top. 1 means middle. 2 means bottom.")
-					.defineInRange("infoAnchor", 1, 0, 2);
-			infoMaxWidth = builder.comment("Info max width. 0.5 means half screen. default: 0.3")
+			infoAnchor = builder.text("Info box vertical alignment")
+					.defineEnum("infoAnchor", InfoSideBar.Anchor.CENTER);
+			infoMaxWidth = builder.text("Info box max width")
+					.comment("Max width for info box. 0.5 means half screen. default: 0.3")
 					.defineInRange("infoMaxWidth", 0.3, 0, 0.5);
-
-			selectionDisplayRequireShift = builder.comment("Render Selection only when pressing shift")
+			selectionDisplayRequireShift = builder
+					.text("Render selector only when pressing [Hold Selection]")
 					.define("selectionDisplayRequireShift", false);
-			selectionScrollRequireShift = builder.comment("Scroll for selection only when pressing shift")
+			selectionScrollRequireShift = builder
+					.text("Scroll for selection only when pressing [Hold Selection]")
 					.define("selectionScrollRequireShift", true);
-
-
 		}
 
 	}
 
-	public static class Common {
+	public static final Client CLIENT = L2ItemSelector.REGISTRATE.registerClient(Client::new);
 
-		Common(ModConfigSpec.Builder builder) {
-
-		}
-
-	}
-
-	public static final ModConfigSpec CLIENT_SPEC;
-	public static final Client CLIENT;
-
-	public static final ModConfigSpec COMMON_SPEC;
-	public static final Common COMMON;
-
-	static {
-		final Pair<Client, ModConfigSpec> client = new ModConfigSpec.Builder().configure(Client::new);
-		CLIENT_SPEC = client.getRight();
-		CLIENT = client.getLeft();
-
-		final Pair<Common, ModConfigSpec> common = new ModConfigSpec.Builder().configure(Common::new);
-		COMMON_SPEC = common.getRight();
-		COMMON = common.getLeft();
-	}
-
-	/**
-	 * Registers any relevant listeners for config
-	 */
 	public static void init() {
-		register(ModConfig.Type.CLIENT, CLIENT_SPEC);
-		register(ModConfig.Type.COMMON, COMMON_SPEC);
 	}
-
-	private static void register(ModConfig.Type type, IConfigSpec<?> spec) {
-		var mod = ModLoadingContext.get().getActiveContainer();
-		String path = "l2_configs/" + mod.getModId() + "-" + type.extension() + ".toml";
-		mod.registerConfig(type, spec, path);
-	}
-
 
 }

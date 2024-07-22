@@ -16,6 +16,33 @@ import java.util.List;
 
 public abstract class IItemSelector {
 
+	public record Holder(ItemStack stack, IItemSelector selector) {
+
+		public int move(int off, Player player) {
+			return selector.move(off, player, stack);
+		}
+
+		public void swap(Player player, int index) {
+			selector.swap(player, index, stack);
+		}
+
+		public int getIndex(Player player) {
+			return selector.getIndex(player, stack);
+		}
+
+		public List<ItemStack> getDisplayList() {
+			return selector.getDisplayList(stack);
+		}
+
+		public List<ItemStack> getList() {
+			return selector.getList(stack);
+		}
+
+		public int getSelHash() {
+			return selector.getSelHash(stack);
+		}
+	}
+
 	private static final HashMap<ResourceLocation, IItemSelector> LIST = new HashMap<>();
 
 	public static synchronized void register(IItemSelector sel) {
@@ -23,23 +50,23 @@ public abstract class IItemSelector {
 	}
 
 	@Nullable
-	public static IItemSelector getSelection(Player player) {
+	public static Holder getSelection(Player player) {
 		ItemStack main = player.getMainHandItem();
 		ItemStack off = player.getOffhandItem();
 		if (main.is(L2ISTagGen.SELECTABLE)) {
 			ItemSelector ans = SimpleItemSelectConfig.get(main);
-			if (ans != null) return ans;
+			if (ans != null) return new Holder(main, ans);
 			for (var sel : LIST.values()) {
 				if (sel.test(main))
-					return sel;
+					return new Holder(main, sel);
 			}
 		}
 		if (off.is(L2ISTagGen.SELECTABLE)) {
 			ItemSelector ans = SimpleItemSelectConfig.get(off);
-			if (ans != null) return ans;
+			if (ans != null) return new Holder(off, ans);
 			for (var sel : LIST.values()) {
 				if (sel.test(off))
-					return sel;
+					return new Holder(off, sel);
 			}
 		}
 		return null;
@@ -54,38 +81,40 @@ public abstract class IItemSelector {
 	public abstract boolean test(ItemStack stack);
 
 	@ServerOnly
-	public void swap(Player sender, int index) {
-		index = (index + getList().size()) % getList().size();
+	public void swap(Player sender, int index, ItemStack stack) {
+		var list = getList(stack);
+		index = (index + list.size()) % list.size();
 		if (index < 0) return;
 		if (test(sender.getMainHandItem())) {
-			ItemStack stack = getList().get(index).copy();
-			stack.setCount(sender.getMainHandItem().getCount());
-			sender.setItemInHand(InteractionHand.MAIN_HAND, stack);
+			ItemStack e = list.get(index).copy();
+			e.setCount(sender.getMainHandItem().getCount());
+			sender.setItemInHand(InteractionHand.MAIN_HAND, e);
 		} else if (test(sender.getOffhandItem())) {
-			ItemStack stack = getList().get(index).copy();
-			stack.setCount(sender.getOffhandItem().getCount());
-			sender.setItemInHand(InteractionHand.OFF_HAND, stack);
+			ItemStack e = list.get(index).copy();
+			e.setCount(sender.getOffhandItem().getCount());
+			sender.setItemInHand(InteractionHand.OFF_HAND, e);
 		}
 	}
 
-	public abstract int getIndex(Player player);
+	public abstract int getIndex(Player player, ItemStack stack);
 
 	@OnlyIn(Dist.CLIENT)
-	public int move(int i, Player player) {
-		int index = getIndex(player);
-		while (i < 0) i += getList().size();
-		return (index + i) % getList().size();
+	public int move(int i, Player player, ItemStack stack) {
+		var list = getList(stack);
+		int index = getIndex(player, stack);
+		while (i < 0) i += list.size();
+		return (index + i) % list.size();
 	}
 
-	public abstract List<ItemStack> getList();
+	public abstract List<ItemStack> getList(ItemStack stack);
 
-	public List<ItemStack> getDisplayList() {
+	public List<ItemStack> getDisplayList(ItemStack stack) {
 		List<ItemStack> ans = new ArrayList<>();
-		for (ItemStack stack : getList()) {
-			if (stack.getItem() instanceof CustomDisplaySelectItem item) {
-				ans.add(item.getDisplay(id, stack));
+		for (ItemStack e : getList(stack)) {
+			if (e.getItem() instanceof CustomDisplaySelectItem item) {
+				ans.add(item.getDisplay(id, e));
 			} else {
-				ans.add(stack);
+				ans.add(e);
 			}
 		}
 		return ans;
@@ -93,6 +122,10 @@ public abstract class IItemSelector {
 
 	public ResourceLocation getID() {
 		return id;
+	}
+
+	public int getSelHash(ItemStack stack) {
+		return 0;
 	}
 
 }

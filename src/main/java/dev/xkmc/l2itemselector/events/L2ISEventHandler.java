@@ -9,7 +9,7 @@ import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 
 @EventBusSubscriber(modid = L2ItemSelector.MODID, bus = EventBusSubscriber.Bus.GAME)
-public class GeneralEventHandler {
+public class L2ISEventHandler {
 
 	@SubscribeEvent
 	public static void addItemToInventory(ItemEntityPickupEvent.Pre event) {

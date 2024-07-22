@@ -35,7 +35,7 @@ public class ItemSelector extends IItemSelector {
 		return set.contains(stack.getItem());
 	}
 
-	public int getIndex(Player player) {
+	public int getIndex(Player player, ItemStack stack) {
 		for (int i = 0; i < list.size(); i++) {
 			if (test(player.getMainHandItem())) {
 				if (list.get(i).getItem() == player.getMainHandItem().getItem()) return i;
@@ -46,7 +46,7 @@ public class ItemSelector extends IItemSelector {
 		return 0;
 	}
 
-	public List<ItemStack> getList() {
+	public List<ItemStack> getList(ItemStack stack) {
 		return list;
 	}
 
