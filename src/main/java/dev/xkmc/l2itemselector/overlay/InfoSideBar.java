@@ -24,7 +24,7 @@ public abstract class InfoSideBar<S extends SideBar.Signature<S>> extends SideBa
 		int width = g.guiWidth(), height = g.guiHeight();
 		var level = Minecraft.getInstance().level;
 		if (level == null) return;
-		float pt = level.getGameTime() + delta.getGameTimeDeltaTicks();
+		float pt = level.getGameTime() + delta.getGameTimeDeltaPartialTick(true);
 		if (!ease(pt)) return;
 		var text = getText();
 		if (text.isEmpty()) return;

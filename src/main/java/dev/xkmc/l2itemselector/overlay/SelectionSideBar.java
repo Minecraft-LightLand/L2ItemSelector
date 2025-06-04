@@ -31,7 +31,7 @@ public abstract class SelectionSideBar<T, S extends SideBar.Signature<S>> extend
 		int width = g.guiWidth(), height = g.guiHeight();
 		var level = Minecraft.getInstance().level;
 		if (level == null) return;
-		float pt = level.getGameTime() + delta.getGameTimeDeltaTicks();
+		float pt = level.getGameTime() + delta.getGameTimeDeltaPartialTick(true);
 		if (!ease(pt)) return;
 		initRender();
 		int x0 = this.getXOffset(width);

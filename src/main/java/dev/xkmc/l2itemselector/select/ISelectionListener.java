@@ -28,5 +28,14 @@ public interface ISelectionListener {
 	default void toServer(int slot) {
 		L2ItemSelector.PACKET_HANDLER.toServer(SetSelectedToServer.of(slot, getID()));
 	}
+	
+	default boolean isHoldKeyDown(Player player) {
+		return player.isShiftKeyDown();
+	}
+
+	default boolean handleClientScroll(int diff, double delta, Player player) {
+		if (diff == 0) return true;
+		return handleClientScroll((int) Math.signum(diff), player);
+	}
 
 }

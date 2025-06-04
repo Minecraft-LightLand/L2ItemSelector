@@ -57,11 +57,9 @@ public class L2ISClientEventHandler {
 	@SubscribeEvent
 	public static void scrollEvent(InputEvent.MouseScrollingEvent event) {
 		double d0 = event.getScrollDeltaY();
+		if (d0 == 0) return;
 		scroll += d0;
 		int i = (int) scroll;
-		if (i == 0) {
-			return;
-		}
 		scroll -= i;
 		LocalPlayer player = Proxy.getClientPlayer();
 		if (player == null) return;
@@ -69,8 +67,8 @@ public class L2ISClientEventHandler {
 		if (sel.isEmpty()) return;
 		if (!sel.get().scrollBypassShift() &&
 				L2ISConfig.CLIENT.selectionScrollRequireShift.get() &&
-				!player.isShiftKeyDown()) return;
-		if (sel.get().handleClientScroll((int) Math.signum(i), player)) {
+				!sel.get().isHoldKeyDown(player)) return;
+		if (sel.get().handleClientScroll(i, d0, player)) {
 			event.setCanceled(true);
 		}
 	}
