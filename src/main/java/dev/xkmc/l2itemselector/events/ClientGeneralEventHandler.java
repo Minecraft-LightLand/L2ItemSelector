@@ -59,9 +59,6 @@ public class ClientGeneralEventHandler {
 		double d0 = event.getScrollDelta();
 		scroll += d0;
 		int i = (int) scroll;
-		if (i == 0) {
-			return;
-		}
 		scroll -= i;
 		LocalPlayer player = Proxy.getClientPlayer();
 		if (player == null) return;
@@ -69,8 +66,8 @@ public class ClientGeneralEventHandler {
 		if (sel.isEmpty()) return;
 		if (!sel.get().scrollBypassShift() &&
 				L2LibraryConfig.CLIENT.selectionScrollRequireShift.get() &&
-				!player.isShiftKeyDown()) return;
-		if (sel.get().handleClientScroll((int) Math.signum(i), player)) {
+				!sel.get().isHoldKeyDown(player)) return;
+		if (sel.get().handleClientScroll(i, d0, player)) {
 			event.setCanceled(true);
 		}
 	}
