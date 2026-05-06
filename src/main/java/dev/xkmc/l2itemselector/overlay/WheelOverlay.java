@@ -30,23 +30,32 @@ public class WheelOverlay implements LayeredDraw.Layer {
 		float r1 = r * 0.25f; //空心部分半径
 		float dr0 = r * 0.025f; // 未选中偏移
 		float dr1 = r * 0.05f; // 选中偏移
+		float s = 1.5f; // 选中放大
 		int ma = WheelHandler.getSel(x0, y0, a0, da, n, r);
 		for (int i = 0; i < n; i++) {
 			float ai = a0 + da * i;
 			if (ma == i) {
-				fillFan(g, x0, y0, ai, da, r, r1, dr1, 0, 0x7fffffff);
+				fillFan(g, x0, y0, ai, da, r, r1, dr1, 0, 0x7fffffff, 0x00ffffff);
 			} else {
-				fillFan(g, x0, y0, ai, da, r, r1, dr0, 0, 0x3fffffff);
+				fillFan(g, x0, y0, ai, da, r, r1, dr0, 0, 0x3fffffff, 0x00ffffff);
 			}
 			float dx = x0 + Mth.cos(ai) * r0;
 			float dy = y0 + Mth.sin(ai) * r0;
-			g.renderItem(list.get(i), (int) dx - 8, (int) dy - 8);
+			if (ma == i) {
+				g.pose().pushPose();
+				g.pose().translate(dx, dy, 0);
+				g.pose().scale(s, s, s);
+				g.renderItem(list.get(i), -8, -8);
+				g.pose().popPose();
+			} else {
+				g.renderItem(list.get(i), (int) dx - 8, (int) dy - 8);
+			}
 		}
 		g.flush();
 	}
 
 
-	public void fillFan(GuiGraphics g, float x0, float y0, float ai, float da, float r0, float r1, float dr, int pZ, int col) {
+	public void fillFan(GuiGraphics g, float x0, float y0, float ai, float da, float r0, float r1, float dr, int pZ, int c0, int c1) {
 		Matrix4f mat = g.pose().last().pose();
 		VertexConsumer vc = g.bufferSource().getBuffer(Shard.GUI_FAN);
 		float x1 = x0 + Mth.cos(ai) * dr;
@@ -54,12 +63,12 @@ public class WheelOverlay implements LayeredDraw.Layer {
 		int n = (int) Math.max(3, da / (Math.PI / 24));
 		for (int i = 0; i <= n; i++) {
 			float a = ai + da / 2 - da / n * i;
-			float x2 = x1 + Mth.cos(a) * r0;
-			float y2 = y1 + Mth.sin(a) * r0;
-			vc.addVertex(mat, x2, y2, pZ).setColor(col);
-			float x3 = x1 + Mth.cos(a) * r1;
-			float y3 = y1 + Mth.sin(a) * r1;
-			vc.addVertex(mat, x3, y3, pZ).setColor(col & 0x00ffffff);
+			float x2 = x1 + Mth.cos(a) * r1;
+			float y2 = y1 + Mth.sin(a) * r1;
+			vc.addVertex(mat, x2, y2, pZ).setColor(c1);
+			float x3 = x1 + Mth.cos(a) * r0;
+			float y3 = y1 + Mth.sin(a) * r0;
+			vc.addVertex(mat, x3, y3, pZ).setColor(c0);
 		}
 
 	}
