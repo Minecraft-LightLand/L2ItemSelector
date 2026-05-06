@@ -5,17 +5,30 @@ import dev.xkmc.l2core.util.Proxy;
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2ISConfig;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
+import dev.xkmc.l2itemselector.overlay.WheelHandler;
 import dev.xkmc.l2itemselector.select.SelectionRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = L2ItemSelector.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class L2ISClientEventHandler {
+
+	@SubscribeEvent
+	public static void clientTick(ClientTickEvent.Pre event) {
+		if (Minecraft.getInstance().level == null){
+			WheelHandler.handleTick(null);
+			return;
+		}
+		Player player = Minecraft.getInstance().player;
+		WheelHandler.handleTick(player);
+	}
 
 	@SubscribeEvent
 	public static void inputEvent(GenericKeyEvent event) {

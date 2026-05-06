@@ -1,0 +1,13 @@
+{
+  "map": {
+    "l2itemselector:command_blocks": [
+      "minecraft:command_block",
+      "minecraft:chain_command_block",
+      "minecraft:repeating_command_block"
+    ],
+    "l2itemselector:structure_blocks": [
+      "minecraft:structure_block",
+      "minecraft:jigsaw"
+    ]
+  }
+}

@@ -20,5 +20,6 @@
   "l2itemselector.configuration.selectionScrollRequireShift": "只在按[显示选择器]时允许滚轮选择",
   "l2itemselector.configuration.selectionScrollRequireShift.tooltip": "",
   "l2itemselector.configuration.title": "莱特兰物品切换 - 配置",
-  "l2itemselector.title": "莱特兰·物品切换"
+  "l2itemselector.title": "莱特兰·物品切换",
+  "key.l2mods.wheel": "轮盘切换"
 }

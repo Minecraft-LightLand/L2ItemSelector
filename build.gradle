@@ -149,4 +149,6 @@ dependencies {
     implementation "dev.xkmc:l2core:${l2core_ver}"
 
     implementation "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+
+
 }

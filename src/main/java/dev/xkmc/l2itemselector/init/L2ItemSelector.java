@@ -5,6 +5,7 @@ import dev.xkmc.l2core.init.reg.registrate.L2Registrate;
 import dev.xkmc.l2core.serial.config.ConfigTypeEntry;
 import dev.xkmc.l2core.serial.config.PacketHandlerWithConfig;
 import dev.xkmc.l2itemselector.init.data.L2ISConfig;
+import dev.xkmc.l2itemselector.init.data.L2ISConfigGen;
 import dev.xkmc.l2itemselector.init.data.L2ISLangData;
 import dev.xkmc.l2itemselector.init.data.L2ISTagGen;
 import dev.xkmc.l2itemselector.select.SelectionRegistry;
@@ -42,6 +43,10 @@ public class L2ItemSelector {
 
 	@SubscribeEvent
 	public static void gatherData(GatherDataEvent event) {
+		var gen = event.getGenerator();
+		var server = event.includeServer();
+		var pvd = event.getLookupProvider();
+		gen.addProvider(server, new L2ISConfigGen(gen, pvd, MODID));
 	}
 
 	public static ResourceLocation loc(String id) {

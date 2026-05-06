@@ -1,6 +1,7 @@
 package dev.xkmc.l2itemselector.init;
 
 import dev.xkmc.l2itemselector.init.data.L2Keys;
+import dev.xkmc.l2itemselector.overlay.WheelOverlay;
 import dev.xkmc.l2itemselector.select.item.ItemSelectionOverlay;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -15,6 +16,7 @@ public class L2ItemSelectorClient {
 	@SubscribeEvent
 	public static void registerOverlays(RegisterGuiLayersEvent event) {
 		event.registerAbove(VanillaGuiLayers.CROSSHAIR, L2ItemSelector.loc("tool_select"), ItemSelectionOverlay.INSTANCE);
+		event.registerAbove(VanillaGuiLayers.CROSSHAIR, L2ItemSelector.loc("wheel"), new WheelOverlay());
 	}
 
 	@SubscribeEvent
