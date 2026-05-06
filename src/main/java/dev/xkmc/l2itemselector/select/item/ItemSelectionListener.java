@@ -2,16 +2,24 @@ package dev.xkmc.l2itemselector.select.item;
 
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
+import dev.xkmc.l2itemselector.overlay.WheelAdaptor;
 import dev.xkmc.l2itemselector.select.ISelectionListener;
 import dev.xkmc.l2itemselector.select.SetSelectedToServer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
-public class ItemSelectionListener implements ISelectionListener {
+public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.Provider {
 
 	public static final ISelectionListener INSTANCE = new ItemSelectionListener();
 
@@ -60,4 +68,53 @@ public class ItemSelectionListener implements ISelectionListener {
 		return false;
 	}
 
+	@Override
+	public Optional<WheelAdaptor> get(@Nullable Player player) {
+		if (player == null) return Optional.empty();
+		var sel = IItemSelector.getSelection(player);
+		if (sel == null) return Optional.empty();
+		return ClientHandler.get(sel);
+	}
+
+	static class ClientHandler {
+
+		public static Optional<WheelAdaptor> get(IItemSelector.Holder sel) {
+			return Optional.of(new ItemWheel(sel));
+		}
+
+	}
+
+	record ItemWheel(IItemSelector.Holder sel) implements WheelAdaptor {
+
+		@Override
+		public List<Entry> getWheelContent() {
+			var src = sel.getDisplayList();
+			var ans = new ArrayList<Entry>();
+			for (var e : src) {
+				ans.add(new ItemEntry(e));
+			}
+			return ans;
+		}
+
+		@Override
+		public int getIndex(Player player) {
+			return sel.getIndex(player);
+		}
+
+	}
+
+	record ItemEntry(ItemStack stack) implements WheelAdaptor.Entry {
+
+		@Override
+		public void render(GuiGraphics g, float x0, float y0, float ai, float r0, float r, float s) {
+			float dx = x0 + Mth.cos(ai) * r0;
+			float dy = y0 + Mth.sin(ai) * r0;
+			g.pose().pushPose();
+			g.pose().translate(dx, dy, 0);
+			g.pose().scale(s, s, s);
+			g.renderItem(stack, -8, -8);
+			g.pose().popPose();
+		}
+
+	}
 }

@@ -18,44 +18,11 @@ public class WheelOverlay implements LayeredDraw.Layer {
 		var player = Minecraft.getInstance().player;
 		if (player == null) return;
 		if (WheelHandler.wheel == null) return;
-		var list = WheelHandler.wheel.getDisplayList();
-		int sel = WheelHandler.wheel.getIndex(player);
-		int n = list.size();
-		if (n <= 1) return;
-		float da = (float) (Math.PI * 2 / n);
-		float a0 = (float) (-Math.PI / 2 - da * sel);
-		int x0 = g.guiWidth() / 2, y0 = g.guiHeight() / 2;
-		float r = Math.min(x0, y0) / 2f; // 轮盘半径
-		float r0 = Math.max(40, r * 0.5f); // 物品渲染位置
-		float r1 = r * 0.25f; //空心部分半径
-		float dr0 = r * 0.025f; // 未选中偏移
-		float dr1 = r * 0.05f; // 选中偏移
-		float s = 1.5f; // 选中放大
-		int ma = WheelHandler.getSel(x0, y0, a0, da, n, r);
-		for (int i = 0; i < n; i++) {
-			float ai = a0 + da * i;
-			if (ma == i) {
-				fillFan(g, x0, y0, ai, da, r, r1, dr1, 0, 0x7fffffff, 0x00ffffff);
-			} else {
-				fillFan(g, x0, y0, ai, da, r, r1, dr0, 0, 0x3fffffff, 0x00ffffff);
-			}
-			float dx = x0 + Mth.cos(ai) * r0;
-			float dy = y0 + Mth.sin(ai) * r0;
-			if (ma == i) {
-				g.pose().pushPose();
-				g.pose().translate(dx, dy, 0);
-				g.pose().scale(s, s, s);
-				g.renderItem(list.get(i), -8, -8);
-				g.pose().popPose();
-			} else {
-				g.renderItem(list.get(i), (int) dx - 8, (int) dy - 8);
-			}
-		}
-		g.flush();
+		WheelHandler.wheel.render(g, player);
 	}
 
 
-	public void fillFan(GuiGraphics g, float x0, float y0, float ai, float da, float r0, float r1, float dr, int pZ, int c0, int c1) {
+	public static void fillFan(GuiGraphics g, float x0, float y0, float ai, float da, float r0, float r1, float dr, int pZ, int c0, int c1) {
 		Matrix4f mat = g.pose().last().pose();
 		VertexConsumer vc = g.bufferSource().getBuffer(Shard.GUI_FAN);
 		float x1 = x0 + Mth.cos(ai) * dr;

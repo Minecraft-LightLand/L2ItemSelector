@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class WheelHandler {
 
-	public static IItemSelector.Holder wheel = null;
+	public static WheelAdaptor wheel = null;
 
 	public static void handleTick(@Nullable Player player) {
 		if (player == null || Minecraft.getInstance().screen != null) {
@@ -39,8 +39,8 @@ public class WheelHandler {
 			disableWheel(player);
 			return;
 		}
-		var sel = IItemSelector.getSelection(player);
-		if (sel == null || sel.getList().size() <= 1) return;
+		var sel = WheelAdaptor.get(player);
+		if (sel == null || sel.getWheelContent().size() <= 1) return;
 		wheel = sel;
 		Minecraft.getInstance().mouseHandler.releaseMouse();
 	}
@@ -57,27 +57,7 @@ public class WheelHandler {
 		var player = Minecraft.getInstance().player;
 		if (player == null) return -1;
 		if (WheelHandler.wheel == null) return -1;
-		var list = WheelHandler.wheel.getDisplayList();
-		int sel = WheelHandler.wheel.getIndex(player);
-		int n = list.size();
-		if (n <= 1) return -1;
-		float da = (float) (Math.PI * 2 / n);
-		float a0 = (float) (-Math.PI / 2 - da * sel);
-		var win = Minecraft.getInstance().getWindow();
-		int x0 = win.getGuiScaledWidth() / 2, y0 = win.getGuiScaledHeight() / 2;
-		float r = Math.min(x0, y0) / 2f;
-		return getSel(x0, y0, a0, da, n, r);
-	}
-
-	public static int getSel(float x0, float y0, float a0, float da, int n, float r) {
-		var mh = Minecraft.getInstance().mouseHandler;
-		var win = Minecraft.getInstance().getWindow();
-		var mx = (float) mh.xpos() * win.getGuiScaledWidth() / win.getScreenWidth() - x0;
-		var my = (float) mh.ypos() * win.getGuiScaledHeight() / win.getScreenHeight() - y0;
-		int ma = (int) ((Math.atan2(my, mx) - a0 + Math.PI * 2 + da / 2) / da) % n;
-		if (mx * mx + my * my > r * r) ma = -1;
-		if (mx * mx + my * my < r * r / 40 / 40) ma = -1;
-		return ma;
+		return WheelHandler.wheel.getMouseSelect(player);
 	}
 
 }
