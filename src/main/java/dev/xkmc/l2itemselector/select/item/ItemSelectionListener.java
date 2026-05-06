@@ -105,7 +105,9 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 		@Override
 		public void render(GuiGraphics g, Player player) {
 			WheelAdaptor.super.render(g, player);
-			ItemStack stack = sel.getDisplayList().get(sel.getIndex(player));
+			int index = getMouseSelect(player);
+			if (index < 0) index = sel.getIndex(player);
+			ItemStack stack = sel.getDisplayList().get(index);
 			int x0 = g.guiWidth() / 2, y0 = g.guiHeight() / 2;
 			float r = Math.min(x0, y0) / 2f; // 轮盘半径
 			float s = r * 0.03f;
@@ -118,7 +120,7 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 			var text = stack.getHoverName();
 			var font = Minecraft.getInstance().font;
 			g.renderTooltip(font, stack.getHoverName(), 0, 0);
-			TextBox box = new TextBox(g, 1, 0, x0, (int) (y0 + s * 10 + 4), -1);
+			TextBox box = new TextBox(g, 1, 0, x0, (int) (y0 + s * 10 + 4), (int) (r / 2));
 			box.renderLongText(font, List.of(text));
 
 		}

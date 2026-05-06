@@ -22,7 +22,7 @@ public class L2ISClientEventHandler {
 
 	@SubscribeEvent
 	public static void clientTick(ClientTickEvent.Pre event) {
-		if (Minecraft.getInstance().level == null){
+		if (Minecraft.getInstance().level == null) {
 			WheelHandler.handleTick(null);
 			return;
 		}
@@ -47,6 +47,7 @@ public class L2ISClientEventHandler {
 
 	@SubscribeEvent
 	public static void mouseEvent(InputEvent.MouseButton.Pre event) {
+		if (WheelHandler.handleClick(event)) return;
 		NeoForge.EVENT_BUS.post(new GenericKeyEvent(e -> e.getType() == InputConstants.Type.MOUSE && e.getValue() == event.getButton(), event.getAction()));
 	}
 

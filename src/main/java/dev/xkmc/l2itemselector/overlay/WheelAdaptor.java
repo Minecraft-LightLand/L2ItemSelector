@@ -76,7 +76,6 @@ public interface WheelAdaptor {
 			var mx = (float) mh.xpos() * win.getGuiScaledWidth() / win.getScreenWidth() - x0;
 			var my = (float) mh.ypos() * win.getGuiScaledHeight() / win.getScreenHeight() - y0;
 			int ma = (int) ((Math.atan2(my, mx) - a0 + Math.PI * 2 + da / 2) / da) % n;
-			if (mx * mx + my * my > r * r) ma = -1;
 			if (mx * mx + my * my < r1 * r1) ma = -1;
 			return ma;
 		}
