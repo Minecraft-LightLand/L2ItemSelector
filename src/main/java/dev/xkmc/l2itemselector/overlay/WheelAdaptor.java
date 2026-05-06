@@ -3,7 +3,6 @@ package dev.xkmc.l2itemselector.overlay;
 import dev.xkmc.l2itemselector.select.SelectionRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,7 +40,7 @@ public interface WheelAdaptor {
 		return ClientHandler.getMouseSelect(x0, y0, a0, da, n, r, r1);
 	}
 
-	default void render(GuiGraphics g, LocalPlayer player) {
+	default void render(GuiGraphics g, Player player) {
 		var list = WheelHandler.wheel.getWheelContent();
 		int n = list.size();
 		if (n <= 1) return;
@@ -64,7 +63,7 @@ public interface WheelAdaptor {
 			} else {
 				WheelOverlay.fillFan(g, x0, y0, ai, da, r, r1, dr0, 0, 0x3fffffff, 0x00ffffff);
 			}
-			list.get(i).render(g, x0, y0, ai, r0, r, ma == i ? s : 1);
+			list.get(i).render(g, x0, y0, ai, r0, r, da, ma == i ? s : 1);
 		}
 		g.flush();
 	}
@@ -92,7 +91,7 @@ public interface WheelAdaptor {
 
 	interface Entry {
 
-		void render(GuiGraphics g, float x0, float y0, float ai, float r0, float r, float s);
+		void render(GuiGraphics g, float x0, float y0, float ai, float r0, float r, float da, float s);
 
 	}
 

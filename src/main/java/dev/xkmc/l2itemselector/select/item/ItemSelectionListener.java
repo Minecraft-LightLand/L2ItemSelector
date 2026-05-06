@@ -2,6 +2,7 @@ package dev.xkmc.l2itemselector.select.item;
 
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
+import dev.xkmc.l2itemselector.overlay.TextBox;
 import dev.xkmc.l2itemselector.overlay.WheelAdaptor;
 import dev.xkmc.l2itemselector.select.ISelectionListener;
 import dev.xkmc.l2itemselector.select.SetSelectedToServer;
@@ -101,12 +102,34 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 			return sel.getIndex(player);
 		}
 
+		@Override
+		public void render(GuiGraphics g, Player player) {
+			WheelAdaptor.super.render(g, player);
+			ItemStack stack = sel.getDisplayList().get(sel.getIndex(player));
+			int x0 = g.guiWidth() / 2, y0 = g.guiHeight() / 2;
+			float r = Math.min(x0, y0) / 2f; // 轮盘半径
+			float s = r * 0.03f;
+			g.pose().pushPose();
+			g.pose().translate(x0, y0, 0);
+			g.pose().scale(s, s, s);
+			g.renderItem(stack, -8, -8);
+			g.pose().popPose();
+
+			var text = stack.getHoverName();
+			var font = Minecraft.getInstance().font;
+			g.renderTooltip(font, stack.getHoverName(), 0, 0);
+			TextBox box = new TextBox(g, 1, 0, x0, (int) (y0 + s * 10 + 4), -1);
+			box.renderLongText(font, List.of(text));
+
+		}
 	}
 
 	record ItemEntry(ItemStack stack) implements WheelAdaptor.Entry {
 
 		@Override
-		public void render(GuiGraphics g, float x0, float y0, float ai, float r0, float r, float s) {
+		public void render(GuiGraphics g, float x0, float y0, float ai, float r0, float r, float da, float s) {
+			s *= Math.min(r * 0.02f, da * r0 / 16f);
+
 			float dx = x0 + Mth.cos(ai) * r0;
 			float dy = y0 + Mth.sin(ai) * r0;
 			g.pose().pushPose();
