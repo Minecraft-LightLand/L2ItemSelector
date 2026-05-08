@@ -22,7 +22,7 @@ public class WheelHandler {
 			return;
 		}
 		if (wheel != null) {
-			var sel = IItemSelector.getSelection(player);
+			var sel = WheelAdaptor.get(player);
 			if (sel == null) {
 				disableWheel(player);
 				return;
@@ -30,8 +30,7 @@ public class WheelHandler {
 			if (!L2Keys.WHEEL.map.isDown()) {
 				int index = getSel();
 				if (index >= 0) {
-					L2ItemSelector.PACKET_HANDLER.toServer(SetSelectedToServer.of(index,
-							ItemSelectionListener.INSTANCE.getID()));
+					wheel.select(index);
 				}
 				disableWheel(player);
 				return;

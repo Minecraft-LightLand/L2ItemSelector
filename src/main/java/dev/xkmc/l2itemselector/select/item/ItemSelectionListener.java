@@ -2,15 +2,13 @@ package dev.xkmc.l2itemselector.select.item;
 
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
-import dev.xkmc.l2itemselector.overlay.TextBox;
+import dev.xkmc.l2itemselector.overlay.ItemWheelEntry;
 import dev.xkmc.l2itemselector.overlay.WheelAdaptor;
 import dev.xkmc.l2itemselector.select.ISelectionListener;
 import dev.xkmc.l2itemselector.select.SetSelectedToServer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -74,27 +72,42 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 		if (player == null) return Optional.empty();
 		var sel = IItemSelector.getSelection(player);
 		if (sel == null) return Optional.empty();
+		if (sel.selector() instanceof WheelAdaptor.Provider pvd)
+			return pvd.get(player);
 		return ClientHandler.get(sel);
 	}
 
 	static class ClientHandler {
 
 		public static Optional<WheelAdaptor> get(IItemSelector.Holder sel) {
-			return Optional.of(new ItemWheel(sel));
+			if (sel.selector() instanceof ItemSelector)
+				return Optional.of(new Wheel(sel));
+			return Optional.empty();
 		}
 
 	}
 
-	record ItemWheel(IItemSelector.Holder sel) implements WheelAdaptor {
+	public record Wheel(IItemSelector.Holder sel) implements WheelAdaptor.ItemWheel {
+
+		@Override
+		public void select(int index) {
+			L2ItemSelector.PACKET_HANDLER.toServer(SetSelectedToServer.of(index,
+					ItemSelectionListener.INSTANCE.getID()));
+		}
 
 		@Override
 		public List<Entry> getWheelContent() {
 			var src = sel.getDisplayList();
 			var ans = new ArrayList<Entry>();
 			for (var e : src) {
-				ans.add(new ItemEntry(e));
+				ans.add(new ItemWheelEntry(e));
 			}
 			return ans;
+		}
+
+		@Override
+		public ItemStack getItem(int index) {
+			return sel.getDisplayList().get(index);
 		}
 
 		@Override
@@ -102,44 +115,6 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 			return sel.getIndex(player);
 		}
 
-		@Override
-		public void render(GuiGraphics g, Player player) {
-			WheelAdaptor.super.render(g, player);
-			int index = getMouseSelect(player);
-			if (index < 0) index = sel.getIndex(player);
-			ItemStack stack = sel.getDisplayList().get(index);
-			int x0 = g.guiWidth() / 2, y0 = g.guiHeight() / 2;
-			float r = Math.min(x0, y0) / 2f; // 轮盘半径
-			float s = r * 0.02f;
-			g.pose().pushPose();
-			g.pose().translate(x0, y0, 0);
-			g.pose().scale(s, s, s);
-			g.renderItem(stack, -8, -16);
-			g.pose().popPose();
-
-			var text = stack.getHoverName();
-			var font = Minecraft.getInstance().font;
-			g.renderTooltip(font, stack.getHoverName(), 0, 0);
-			TextBox box = new TextBox(g, 1, 0, x0, (int) (y0 + s * 3), (int) r);
-			box.renderLongText(font, List.of(text));
-
-		}
 	}
 
-	record ItemEntry(ItemStack stack) implements WheelAdaptor.Entry {
-
-		@Override
-		public void render(GuiGraphics g, float x0, float y0, float ai, float r0, float r, float da, float s) {
-			s *= Math.min(r * 0.015f, da * r0 / 16f);
-
-			float dx = x0 + Mth.cos(ai) * r0;
-			float dy = y0 + Mth.sin(ai) * r0;
-			g.pose().pushPose();
-			g.pose().translate(dx, dy, 0);
-			g.pose().scale(s, s, s);
-			g.renderItem(stack, -8, -8);
-			g.pose().popPose();
-		}
-
-	}
 }

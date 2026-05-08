@@ -4,6 +4,7 @@ import dev.xkmc.l2itemselector.select.SelectionRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -68,6 +69,8 @@ public interface WheelAdaptor {
 		g.flush();
 	}
 
+	void select(int index);
+
 	class ClientHandler {
 
 		static int getMouseSelect(float x0, float y0, float a0, float da, int n, float r, float r1) {
@@ -91,6 +94,34 @@ public interface WheelAdaptor {
 	interface Entry {
 
 		void render(GuiGraphics g, float x0, float y0, float ai, float r0, float r, float da, float s);
+
+	}
+
+	interface ItemWheel extends WheelAdaptor {
+
+		ItemStack getItem(int index);
+
+		@Override
+		default void render(GuiGraphics g, Player player) {
+			WheelAdaptor.super.render(g, player);
+			int index = getMouseSelect(player);
+			if (index < 0) index = getIndex(player);
+			ItemStack stack = getItem(index);
+			int x0 = g.guiWidth() / 2, y0 = g.guiHeight() / 2;
+			float r = Math.min(x0, y0) / 2f;
+			float s = r * 0.02f;
+			g.pose().pushPose();
+			g.pose().translate(x0, y0, 0);
+			g.pose().scale(s, s, s);
+			g.renderItem(stack, -8, -16);
+			g.pose().popPose();
+
+			var text = stack.getHoverName();
+			var font = Minecraft.getInstance().font;
+			g.renderTooltip(font, stack.getHoverName(), 0, 0);
+			TextBox box = new TextBox(g, 1, 0, x0, (int) (y0 + s * 3), (int) r);
+			box.renderLongText(font, List.of(text));
+		}
 
 	}
 
