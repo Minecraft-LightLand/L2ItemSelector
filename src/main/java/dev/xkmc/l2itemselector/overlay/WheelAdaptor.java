@@ -46,9 +46,9 @@ public interface WheelAdaptor {
 		if (n <= 1) return;
 		float da = (float) (Math.PI * 2 / n);
 		int x0 = g.guiWidth() / 2, y0 = g.guiHeight() / 2;
-		float r = Math.min(x0, y0) / 2f; // 轮盘半径
-		float r0 = Math.max(40, r * 0.5f); // 物品渲染位置
-		float r1 = r * 0.25f; //空心部分半径
+		float r = Math.min(x0, y0) / 1.5f; // 轮盘半径
+		float r0 = Math.max(40, r * 0.775f); // 物品渲染位置
+		float r1 = r * 0.5f; //空心部分半径
 
 		float dr0 = r * 0.025f; // 未选中偏移
 		float dr1 = r * 0.05f; // 选中偏移

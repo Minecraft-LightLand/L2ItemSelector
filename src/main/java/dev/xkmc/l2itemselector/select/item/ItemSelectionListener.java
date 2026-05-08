@@ -110,17 +110,17 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 			ItemStack stack = sel.getDisplayList().get(index);
 			int x0 = g.guiWidth() / 2, y0 = g.guiHeight() / 2;
 			float r = Math.min(x0, y0) / 2f; // 轮盘半径
-			float s = r * 0.03f;
+			float s = r * 0.02f;
 			g.pose().pushPose();
 			g.pose().translate(x0, y0, 0);
 			g.pose().scale(s, s, s);
-			g.renderItem(stack, -8, -8);
+			g.renderItem(stack, -8, -16);
 			g.pose().popPose();
 
 			var text = stack.getHoverName();
 			var font = Minecraft.getInstance().font;
 			g.renderTooltip(font, stack.getHoverName(), 0, 0);
-			TextBox box = new TextBox(g, 1, 0, x0, (int) (y0 + s * 10 + 4), (int) (r / 2));
+			TextBox box = new TextBox(g, 1, 0, x0, (int) (y0 + s * 3), (int) r);
 			box.renderLongText(font, List.of(text));
 
 		}
@@ -130,7 +130,7 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 
 		@Override
 		public void render(GuiGraphics g, float x0, float y0, float ai, float r0, float r, float da, float s) {
-			s *= Math.min(r * 0.02f, da * r0 / 16f);
+			s *= Math.min(r * 0.015f, da * r0 / 16f);
 
 			float dx = x0 + Mth.cos(ai) * r0;
 			float dy = y0 + Mth.sin(ai) * r0;
