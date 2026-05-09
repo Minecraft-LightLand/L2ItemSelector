@@ -15,7 +15,6 @@ public class WheelHandler {
 	@Nullable
 	public static WheelAdaptor wheel = null;
 	public static int wheelIndex = 0;
-	private static boolean suppress = false;
 
 	public static void handleTick(@Nullable Player player) {
 		if (player == null || Minecraft.getInstance().screen != null) {
@@ -42,7 +41,6 @@ public class WheelHandler {
 			disableWheel(player);
 			return;
 		}
-		if (suppress) return;
 		var sel = WheelAdaptor.get(player, wheelIndex);
 		if (sel == null || sel.getWheelContent().size() <= 1) return;
 		wheel = sel;
@@ -51,7 +49,6 @@ public class WheelHandler {
 
 	private static void disableWheel(@Nullable Player player) {
 		wheelIndex = 0;
-		suppress = false;
 		if (wheel == null) return;
 		if (player != null && Minecraft.getInstance().screen == null) {
 			Minecraft.getInstance().mouseHandler.grabMouse();
@@ -77,8 +74,6 @@ public class WheelHandler {
 					if (index >= 0) {
 						wheel.select(index);
 					}
-					disableWheel(player);
-					suppress = true;
 				}
 				event.setCanceled(true);
 				return true;
