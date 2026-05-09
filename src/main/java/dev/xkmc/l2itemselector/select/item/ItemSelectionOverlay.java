@@ -6,7 +6,7 @@ import dev.xkmc.l2itemselector.overlay.ItemSelSideBar;
 import dev.xkmc.l2itemselector.overlay.SideBar;
 import dev.xkmc.l2itemselector.overlay.TextBox;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,9 +16,9 @@ public class ItemSelectionOverlay extends ItemSelSideBar<ItemSelectionOverlay.It
 
 	public static final ItemSelectionOverlay INSTANCE = new ItemSelectionOverlay();
 
-	private static final ResourceLocation EMPTY = ResourceLocation.withDefaultNamespace("empty");
+	private static final Identifier EMPTY = Identifier.withDefaultNamespace("empty");
 
-	public record ItemSelSignature(ResourceLocation id, int val, int hash) implements Signature<ItemSelSignature> {
+	public record ItemSelSignature(Identifier id, int val, int hash) implements Signature<ItemSelSignature> {
 
 		@Override
 		public boolean shouldRefreshIdle(SideBar<?> sideBar, @Nullable ItemSelectionOverlay.ItemSelSignature old) {

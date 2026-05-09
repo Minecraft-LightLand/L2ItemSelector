@@ -1,5 +1,6 @@
 package dev.xkmc.l2itemselector.select.item;
 
+import dev.xkmc.l2core.util.TooltipHelper;
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
 import dev.xkmc.l2itemselector.overlay.ItemWheelEntry;
@@ -8,7 +9,7 @@ import dev.xkmc.l2itemselector.select.ISelectionListener;
 import dev.xkmc.l2itemselector.select.SetSelectedToServer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -23,14 +24,14 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 	public static final ISelectionListener INSTANCE = new ItemSelectionListener();
 
 	@Override
-	public ResourceLocation getID() {
+	public Identifier getID() {
 		return L2ItemSelector.loc("item");
 	}
 
 	@Override
 	public boolean isClientActive(Player player) {
 		if (Minecraft.getInstance().screen != null) return false;
-		if (Screen.hasAltDown()) return false;
+		if (L2Keys.hasAltDown()) return false;
 		var sel = IItemSelector.getSelection(player);
 		return sel != null;
 	}

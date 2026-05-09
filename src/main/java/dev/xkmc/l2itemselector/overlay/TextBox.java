@@ -1,6 +1,6 @@
 package dev.xkmc.l2itemselector.overlay;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
 
@@ -8,7 +8,7 @@ public class TextBox extends OverlayUtil {
 
 	private final int anchorX, anchorY;
 
-	public TextBox(GuiGraphics g, int anchorX, int anchorY, int x, int y, int width) {
+	public TextBox(GuiGraphicsExtractor g, int anchorX, int anchorY, int x, int y, int width) {
 		super(g, x, y, width);
 		this.anchorX = anchorX;
 		this.anchorY = anchorY;

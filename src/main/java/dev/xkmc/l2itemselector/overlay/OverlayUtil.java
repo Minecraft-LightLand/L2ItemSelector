@@ -2,10 +2,9 @@ package dev.xkmc.l2itemselector.overlay;
 
 import dev.xkmc.l2itemselector.init.data.L2ISConfig;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
-import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
 import net.minecraft.network.chat.Component;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
@@ -23,10 +22,10 @@ public class OverlayUtil implements ClientTooltipPositioner {
 	public int be = 0x5028007f;
 	public int tc = 0xFFFFFFFF;
 
-	protected final GuiGraphics g;
+	protected final GuiGraphicsExtractor g;
 	protected final int x0, y0, maxW;
 
-	public OverlayUtil(GuiGraphics g, int x0, int y0, int maxW) {
+	public OverlayUtil(GuiGraphicsExtractor g, int x0, int y0, int maxW) {
 		this.g = g;
 		this.x0 = x0;
 		this.y0 = y0;
@@ -40,42 +39,7 @@ public class OverlayUtil implements ClientTooltipPositioner {
 	public void renderLongText(Font font, List<Component> list) {
 		List<ClientTooltipComponent> ans = list.stream().flatMap(text -> font.split(text, maxW).stream())
 				.map(ClientTooltipComponent::create).toList();
-		renderTooltipInternal(font, ans);
-	}
-
-	public void renderTooltipInternal(Font font, List<ClientTooltipComponent> list) {
-		if (list.isEmpty()) return;
-		int w = 0;
-		int h = list.size() == 1 ? -2 : 0;
-		for (ClientTooltipComponent c : list) {
-			int wi = c.getWidth(font);
-			if (wi > w) {
-				w = wi;
-			}
-			h += c.getHeight();
-		}
-		int wf = w;
-		int hf = h;
-		Vector2ic pos = positionTooltip(g.guiWidth(), g.guiHeight(), x0, y0, wf, hf);
-		int xf = pos.x();
-		int yf = pos.y();
-		g.pose().pushPose();
-		int z = 400;
-		g.drawManaged(() -> TooltipRenderUtil.renderTooltipBackground(g, xf, yf, wf, hf, z, bg, bg, bs, be));
-		g.pose().translate(0.0F, 0.0F, z);
-		int yi = yf;
-		for (int i = 0; i < list.size(); ++i) {
-			ClientTooltipComponent c = list.get(i);
-			c.renderText(font, xf, yi, g.pose().last().pose(), g.bufferSource());
-			yi += c.getHeight() + (i == 0 ? 2 : 0);
-		}
-		yi = yf;
-		for (int i = 0; i < list.size(); ++i) {
-			ClientTooltipComponent c = list.get(i);
-			c.renderImage(font, xf, yi, g);
-			yi += c.getHeight() + (i == 0 ? 2 : 0);
-		}
-		g.pose().popPose();
+		g.tooltip(font, ans, x0, y0, this, null);
 	}
 
 	@Override
@@ -88,14 +52,14 @@ public class OverlayUtil implements ClientTooltipPositioner {
 	/**
 	 * specifies outer size
 	 */
-	public static void fillRect(GuiGraphics g, int x, int y, int w, int h, int col) {
+	public static void fillRect(GuiGraphicsExtractor g, int x, int y, int w, int h, int col) {
 		g.fill(x, y, x + w, y + h, col);
 	}
 
 	/**
 	 * specifies inner size
 	 */
-	public static void drawRect(GuiGraphics g, int x, int y, int w, int h, int col) {
+	public static void drawRect(GuiGraphicsExtractor g, int x, int y, int w, int h, int col) {
 		fillRect(g, x - 1, y - 1, w + 2, 1, col);
 		fillRect(g, x - 1, y - 1, 1, h + 2, col);
 		fillRect(g, x - 1, y + h, w + 2, 1, col);

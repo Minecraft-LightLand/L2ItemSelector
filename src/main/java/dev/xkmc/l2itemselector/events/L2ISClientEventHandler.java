@@ -17,7 +17,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
-@EventBusSubscriber(value = Dist.CLIENT, modid = L2ItemSelector.MODID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(value = Dist.CLIENT, modid = L2ItemSelector.MODID)
 public class L2ISClientEventHandler {
 
 	@SubscribeEvent

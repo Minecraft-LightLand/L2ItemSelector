@@ -1,8 +1,4 @@
-@MethodsReturnNonnullByDefault
-@ParametersAreNonnullByDefault
+@org.jspecify.annotations.NullMarked
 
 package dev.xkmc.l2itemselector.events;
 
-import net.minecraft.MethodsReturnNonnullByDefault;
-
-import javax.annotation.ParametersAreNonnullByDefault;

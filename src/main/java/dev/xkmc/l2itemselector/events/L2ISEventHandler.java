@@ -2,13 +2,13 @@ package dev.xkmc.l2itemselector.events;
 
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.select.item.ItemConvertor;
+import net.minecraft.util.TriState;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 
-@EventBusSubscriber(modid = L2ItemSelector.MODID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = L2ItemSelector.MODID)
 public class L2ISEventHandler {
 
 	@SubscribeEvent

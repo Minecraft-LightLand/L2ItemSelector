@@ -4,13 +4,13 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.gui.GuiLayer;
 
 import java.util.List;
 
-public abstract class SelectionSideBar<T, S extends SideBar.Signature<S>> extends SideBar<S> implements LayeredDraw.Layer {
+public abstract class SelectionSideBar<T, S extends SideBar.Signature<S>> extends SideBar<S> implements GuiLayer {
 
 	public SelectionSideBar(float duration, float ease) {
 		super(duration, ease);
@@ -27,7 +27,7 @@ public abstract class SelectionSideBar<T, S extends SideBar.Signature<S>> extend
 	}
 
 	@Override
-	public void render(GuiGraphics g, DeltaTracker delta) {
+	public void render(GuiGraphicsExtractor g, DeltaTracker delta) {
 		int width = g.guiWidth(), height = g.guiHeight();
 		var level = Minecraft.getInstance().level;
 		if (level == null) return;
@@ -50,12 +50,12 @@ public abstract class SelectionSideBar<T, S extends SideBar.Signature<S>> extend
 
 	protected abstract void renderEntry(Context ctx, T t, int index, int select);
 
-	public record Context(GuiGraphics g, float pTick, Font font, int x0, int y0) {
+	public record Context(GuiGraphicsExtractor g, float pTick, Font font, int x0, int y0) {
 
 		public void renderItem(ItemStack stack, int x, int y) {
 			if (!stack.isEmpty()) {
-				g.renderItem(stack, x, y);
-				g.renderItemDecorations(font, stack, x, y);
+				g.item(stack, x, y);
+				g.itemDecorations(font, stack, x, y);
 			}
 		}
 	}

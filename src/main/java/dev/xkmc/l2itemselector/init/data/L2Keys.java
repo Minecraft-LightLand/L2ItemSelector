@@ -1,7 +1,9 @@
 package dev.xkmc.l2itemselector.init.data;
 
+import com.mojang.blaze3d.platform.InputConstants;
+import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 
 public enum L2Keys {
@@ -23,7 +25,8 @@ public enum L2Keys {
 	}
 
 	public static boolean hasCtrlDown() {
-		return Screen.hasControlDown();
+		return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 341)
+				|| InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), 345);
 	}
 
 	public final String id, def;
@@ -34,6 +37,6 @@ public enum L2Keys {
 		this.id = id;
 		this.def = def;
 		this.key = key;
-		this.map = new KeyMapping(id, key, "key.categories.l2mods");
+		this.map = new KeyMapping(id, key, new KeyMapping.Category(L2ItemSelector.loc("l2mods")));
 	}
 }

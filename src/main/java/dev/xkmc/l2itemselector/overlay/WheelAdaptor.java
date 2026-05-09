@@ -1,8 +1,9 @@
 package dev.xkmc.l2itemselector.overlay;
 
+import dev.xkmc.l2core.util.GuiHelper;
 import dev.xkmc.l2itemselector.select.SelectionRegistry;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -41,7 +42,7 @@ public interface WheelAdaptor {
 		return ClientHandler.getMouseSelect(x0, y0, a0, da, n, r, r1);
 	}
 
-	default void render(GuiGraphics g, Player player) {
+	default void render(GuiGraphicsExtractor g, Player player) {
 		var list = WheelHandler.wheel.getWheelContent();
 		int n = list.size();
 		if (n <= 1) return;
@@ -60,13 +61,12 @@ public interface WheelAdaptor {
 		for (int i = 0; i < n; i++) {
 			float ai = a0 + da * i;
 			if (ma == i) {
-				WheelOverlay.fillFan(g, x0, y0, ai, da, r, r1, dr1, 0, 0x7fffffff, 0x00ffffff);
+				WheelOverlay.fillFan(g, x0, y0, ai, da, r, r1, dr1, 0x7fffffff, 0x00ffffff);
 			} else {
-				WheelOverlay.fillFan(g, x0, y0, ai, da, r, r1, dr0, 0, 0x3fffffff, 0x00ffffff);
+				WheelOverlay.fillFan(g, x0, y0, ai, da, r, r1, dr0, 0x3fffffff, 0x00ffffff);
 			}
 			list.get(i).render(g, x0, y0, ai, r0, r, da, ma == i ? s : 1);
 		}
-		g.flush();
 	}
 
 	void select(int index);
@@ -93,7 +93,7 @@ public interface WheelAdaptor {
 
 	interface Entry {
 
-		void render(GuiGraphics g, float x0, float y0, float ai, float r0, float r, float da, float s);
+		void render(GuiGraphicsExtractor g, float x0, float y0, float ai, float r0, float r, float da, float s);
 
 	}
 
@@ -102,7 +102,7 @@ public interface WheelAdaptor {
 		ItemStack getItem(int index);
 
 		@Override
-		default void render(GuiGraphics g, Player player) {
+		default void render(GuiGraphicsExtractor g, Player player) {
 			WheelAdaptor.super.render(g, player);
 			int index = getMouseSelect(player);
 			if (index < 0) index = getIndex(player);
@@ -110,15 +110,15 @@ public interface WheelAdaptor {
 			int x0 = g.guiWidth() / 2, y0 = g.guiHeight() / 2;
 			float r = Math.min(x0, y0) / 2f;
 			float s = r * 0.02f;
-			g.pose().pushPose();
-			g.pose().translate(x0, y0, 0);
-			g.pose().scale(s, s, s);
-			g.renderItem(stack, -8, -16);
-			g.pose().popPose();
+			g.pose().pushMatrix();
+			g.pose().translate(x0, y0);
+			g.pose().scale(s, s);
+			g.item(stack, -8, -16);
+			g.pose().popMatrix();
 
 			var text = stack.getHoverName();
 			var font = Minecraft.getInstance().font;
-			g.renderTooltip(font, stack.getHoverName(), 0, 0);
+			GuiHelper.tooltip(g, List.of(stack.getHoverName()), 0, 0);
 			TextBox box = new TextBox(g, 1, 0, x0, (int) (y0 + s * 3), (int) r);
 			box.renderLongText(font, List.of(text));
 		}

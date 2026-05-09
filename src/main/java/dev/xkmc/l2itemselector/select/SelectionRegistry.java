@@ -1,6 +1,6 @@
 package dev.xkmc.l2itemselector.select;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nullable;
@@ -11,7 +11,7 @@ import java.util.TreeMap;
 
 public class SelectionRegistry {
 
-	private static final Map<ResourceLocation, ISelectionListener> REGISTRY_MAP = new HashMap<>();
+	private static final Map<Identifier, ISelectionListener> REGISTRY_MAP = new HashMap<>();
 	private static final Map<Integer, ISelectionListener> PRIORITY_MAP = new TreeMap<>();
 
 	/**
@@ -35,7 +35,7 @@ public class SelectionRegistry {
 	}
 
 	@Nullable
-	public static ISelectionListener getEntry(ResourceLocation name) {
+	public static ISelectionListener getEntry(Identifier name) {
 		return REGISTRY_MAP.get(name);
 	}
 }

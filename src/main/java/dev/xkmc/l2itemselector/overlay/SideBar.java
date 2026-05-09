@@ -1,7 +1,6 @@
 package dev.xkmc.l2itemselector.overlay;
 
 import dev.xkmc.l2itemselector.init.data.L2Keys;
-import net.minecraft.client.Minecraft;
 
 import javax.annotation.Nullable;
 

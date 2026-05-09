@@ -1,4 +1,0 @@
-// 1.21	2026-05-06T10:36:10.646993	Registrate Provider for l2itemselector [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider, Tags (mob_effect), Tags (attribute), Tags (enchantment)]
-5ce636a2e62369f5dae7f5f1b60779c0eec188ea assets/l2itemselector/lang/en_ud.json
-3ef50b6943449433473966f71d09d6fb5f1c6b8f assets/l2itemselector/lang/en_us.json
-1b1163ece60c159ad94cd55a40184b6c7caa0c5d data/l2itemselector/tags/item/selectable.json

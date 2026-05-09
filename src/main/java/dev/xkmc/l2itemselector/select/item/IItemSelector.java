@@ -2,12 +2,10 @@ package dev.xkmc.l2itemselector.select.item;
 
 import dev.xkmc.l2core.util.ServerOnly;
 import dev.xkmc.l2itemselector.init.data.L2ISTagGen;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -43,7 +41,7 @@ public abstract class IItemSelector {
 		}
 	}
 
-	private static final HashMap<ResourceLocation, IItemSelector> LIST = new HashMap<>();
+	private static final HashMap<Identifier, IItemSelector> LIST = new HashMap<>();
 
 	public static synchronized void register(IItemSelector sel) {
 		LIST.put(sel.getID(), sel);
@@ -72,9 +70,9 @@ public abstract class IItemSelector {
 		return null;
 	}
 
-	private final ResourceLocation id;
+	private final Identifier id;
 
-	public IItemSelector(ResourceLocation id) {
+	public IItemSelector(Identifier id) {
 		this.id = id;
 	}
 
@@ -98,7 +96,6 @@ public abstract class IItemSelector {
 
 	public abstract int getIndex(Player player, ItemStack stack);
 
-	@OnlyIn(Dist.CLIENT)
 	public int move(int i, Player player, ItemStack stack) {
 		var list = getList(stack);
 		int index = getIndex(player, stack);
@@ -120,7 +117,7 @@ public abstract class IItemSelector {
 		return ans;
 	}
 
-	public ResourceLocation getID() {
+	public Identifier getID() {
 		return id;
 	}
 

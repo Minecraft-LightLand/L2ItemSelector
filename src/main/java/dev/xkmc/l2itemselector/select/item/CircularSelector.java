@@ -1,6 +1,6 @@
 package dev.xkmc.l2itemselector.select.item;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
@@ -11,7 +11,7 @@ import java.util.function.Function;
 
 public abstract class CircularSelector<T> extends IItemSelector {
 
-	public CircularSelector(ResourceLocation id) {
+	public CircularSelector(Identifier id) {
 		super(id);
 	}
 

@@ -8,7 +8,7 @@ import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2ISTagGen;
 import dev.xkmc.l2serial.serialization.marker.SerialClass;
 import dev.xkmc.l2serial.serialization.marker.SerialField;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -28,7 +28,7 @@ public class SimpleItemSelectConfig extends BaseConfig {
 
 	@ConfigCollect(CollectType.MAP_COLLECT)
 	@SerialField
-	public final HashMap<ResourceLocation, ArrayList<Item>> map = new HashMap<>();
+	public final HashMap<Identifier, ArrayList<Item>> map = new HashMap<>();
 
 	private HashMap<Item, ItemSelector> cache;
 
@@ -52,7 +52,7 @@ public class SimpleItemSelectConfig extends BaseConfig {
 	}
 
 	@DataGenOnly
-	public SimpleItemSelectConfig add(ResourceLocation id, Item... items) {
+	public SimpleItemSelectConfig add(Identifier id, Item... items) {
 		map.put(id, new ArrayList<>(List.of(items)));
 		return this;
 	}

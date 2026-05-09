@@ -12,7 +12,7 @@ public class L2ISTagGen {
 	public static final TagKey<Item> SELECTABLE = ItemTags.create(L2ItemSelector.loc("selectable"));
 
 	public static void genItemTags(RegistrateItemTagsProvider pvd) {
-		pvd.addTag(SELECTABLE).add(Items.COMMAND_BLOCK, Items.CHAIN_COMMAND_BLOCK, Items.REPEATING_COMMAND_BLOCK, Items.STRUCTURE_BLOCK, Items.JIGSAW);
+		pvd.tag(SELECTABLE).add(Items.COMMAND_BLOCK, Items.CHAIN_COMMAND_BLOCK, Items.REPEATING_COMMAND_BLOCK, Items.STRUCTURE_BLOCK, Items.JIGSAW);
 	}
 
 }

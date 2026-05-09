@@ -12,7 +12,7 @@ import dev.xkmc.l2itemselector.select.SelectionRegistry;
 import dev.xkmc.l2itemselector.select.SetSelectedToServer;
 import dev.xkmc.l2itemselector.select.item.ItemSelectionListener;
 import dev.xkmc.l2itemselector.select.item.SimpleItemSelectConfig;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
@@ -21,7 +21,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import static dev.xkmc.l2serial.network.PacketHandler.NetDir.PLAY_TO_SERVER;
 
 @Mod(L2ItemSelector.MODID)
-@EventBusSubscriber(modid = L2ItemSelector.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = L2ItemSelector.MODID)
 public class L2ItemSelector {
 
 	public static final String MODID = "l2itemselector";
@@ -42,15 +42,14 @@ public class L2ItemSelector {
 	}
 
 	@SubscribeEvent
-	public static void gatherData(GatherDataEvent event) {
+	public static void gatherData(GatherDataEvent.Client event) {
 		var gen = event.getGenerator();
-		var server = event.includeServer();
 		var pvd = event.getLookupProvider();
-		gen.addProvider(server, new L2ISConfigGen(gen, pvd, MODID));
+		gen.addProvider(true, new L2ISConfigGen(gen, pvd, MODID));
 	}
 
-	public static ResourceLocation loc(String id) {
-		return ResourceLocation.fromNamespaceAndPath(MODID, id);
+	public static Identifier loc(String id) {
+		return Identifier.fromNamespaceAndPath(MODID, id);
 	}
 
 }

@@ -3,13 +3,13 @@ package dev.xkmc.l2itemselector.overlay;
 import dev.xkmc.l2itemselector.init.data.L2ISConfig;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
+import net.neoforged.neoforge.client.gui.GuiLayer;
 
 import java.util.List;
 
-public abstract class InfoSideBar<S extends SideBar.Signature<S>> extends SideBar<S> implements LayeredDraw.Layer {
+public abstract class InfoSideBar<S extends SideBar.Signature<S>> extends SideBar<S> implements GuiLayer {
 
 	public enum Anchor {
 		TOP, CENTER, BOTTOM
@@ -20,7 +20,7 @@ public abstract class InfoSideBar<S extends SideBar.Signature<S>> extends SideBa
 	}
 
 	@Override
-	public void render(GuiGraphics g, DeltaTracker delta) {
+	public void render(GuiGraphicsExtractor g, DeltaTracker delta) {
 		int width = g.guiWidth(), height = g.guiHeight();
 		var level = Minecraft.getInstance().level;
 		if (level == null) return;

@@ -12,6 +12,7 @@ import org.lwjgl.glfw.GLFW;
 
 public class WheelHandler {
 
+	@Nullable
 	public static WheelAdaptor wheel = null;
 	public static int wheelIndex = 0;
 	private static boolean suppress = false;

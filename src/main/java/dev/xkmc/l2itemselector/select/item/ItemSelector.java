@@ -1,7 +1,7 @@
 package dev.xkmc.l2itemselector.select.item;
 
 import dev.xkmc.l2itemselector.init.data.L2ISTagGen;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -19,7 +19,7 @@ public class ItemSelector extends IItemSelector {
 	private final List<ItemStack> list;
 	private final Set<Item> set = new HashSet<>();
 
-	public ItemSelector(ResourceLocation rl, ItemStack... stacks) {
+	public ItemSelector(Identifier rl, ItemStack... stacks) {
 		super(rl);
 		list = List.of(stacks);
 		for (ItemStack stack : stacks) {

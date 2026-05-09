@@ -2,14 +2,14 @@ package dev.xkmc.l2itemselector.select;
 
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.function.BooleanSupplier;
 
 public interface ISelectionListener {
 
-	ResourceLocation getID();
+	Identifier getID();
 
 	boolean isClientActive(Player player);
 
@@ -28,7 +28,7 @@ public interface ISelectionListener {
 	default void toServer(int slot) {
 		L2ItemSelector.PACKET_HANDLER.toServer(SetSelectedToServer.of(slot, getID()));
 	}
-	
+
 	default boolean isHoldKeyDown(Player player) {
 		return player.isShiftKeyDown();
 	}
