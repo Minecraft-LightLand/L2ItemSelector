@@ -75,8 +75,7 @@ public class WheelHandler {
 				if (event.getAction() == GLFW.GLFW_RELEASE) {
 					int index = getSel();
 					if (index >= 0) {
-						L2ItemSelector.PACKET_HANDLER.toServer(SetSelectedToServer.of(index,
-								ItemSelectionListener.INSTANCE.getID()));
+						wheel.select(index);
 					}
 					disableWheel(player);
 					suppress = true;
