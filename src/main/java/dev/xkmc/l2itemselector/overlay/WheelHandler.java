@@ -1,9 +1,6 @@
 package dev.xkmc.l2itemselector.overlay;
 
-import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
-import dev.xkmc.l2itemselector.select.SetSelectedToServer;
-import dev.xkmc.l2itemselector.select.item.ItemSelectionListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.client.event.InputEvent;
@@ -14,7 +11,6 @@ public class WheelHandler {
 
 	public static WheelAdaptor wheel = null;
 	public static int wheelIndex = 0;
-	private static boolean suppress = false;
 
 	public static void handleTick(@Nullable Player player) {
 		if (player == null || Minecraft.getInstance().screen != null) {
@@ -41,7 +37,6 @@ public class WheelHandler {
 			disableWheel(player);
 			return;
 		}
-		if (suppress) return;
 		var sel = WheelAdaptor.get(player, wheelIndex);
 		if (sel == null || sel.getWheelContent().size() <= 1) return;
 		wheel = sel;
@@ -50,7 +45,6 @@ public class WheelHandler {
 
 	private static void disableWheel(@Nullable Player player) {
 		wheelIndex = 0;
-		suppress = false;
 		if (wheel == null) return;
 		if (player != null && Minecraft.getInstance().screen == null) {
 			Minecraft.getInstance().mouseHandler.grabMouse();
@@ -69,16 +63,12 @@ public class WheelHandler {
 		if (wheel == null) return false;
 		var player = Minecraft.getInstance().player;
 		if (player != null) {
-
 			if (event.getButton() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
 				if (event.getAction() == GLFW.GLFW_RELEASE) {
 					int index = getSel();
 					if (index >= 0) {
-						L2ItemSelector.PACKET_HANDLER.toServer(SetSelectedToServer.of(index,
-								ItemSelectionListener.INSTANCE.getID()));
+						wheel.select(index);
 					}
-					disableWheel(player);
-					suppress = true;
 				}
 				event.setCanceled(true);
 				return true;
@@ -89,7 +79,6 @@ public class WheelHandler {
 				event.setCanceled(true);
 				return true;
 			}
-
 		}
 		return false;
 	}
