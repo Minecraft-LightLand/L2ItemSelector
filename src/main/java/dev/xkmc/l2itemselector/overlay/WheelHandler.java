@@ -3,7 +3,6 @@ package dev.xkmc.l2itemselector.overlay;
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
 import dev.xkmc.l2itemselector.select.SetSelectedToServer;
-import dev.xkmc.l2itemselector.select.item.IItemSelector;
 import dev.xkmc.l2itemselector.select.item.ItemSelectionListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
@@ -14,6 +13,7 @@ import org.lwjgl.glfw.GLFW;
 public class WheelHandler {
 
 	public static WheelAdaptor wheel = null;
+	public static int wheelIndex = 0;
 	private static boolean suppress = false;
 
 	public static void handleTick(@Nullable Player player) {
@@ -22,8 +22,8 @@ public class WheelHandler {
 			return;
 		}
 		if (wheel != null) {
-			var sel = WheelAdaptor.get(player);
-			if (sel == null) {
+			wheel = WheelAdaptor.get(player, wheelIndex);
+			if (wheel == null) {
 				disableWheel(player);
 				return;
 			}
@@ -42,13 +42,14 @@ public class WheelHandler {
 			return;
 		}
 		if (suppress) return;
-		var sel = WheelAdaptor.get(player);
+		var sel = WheelAdaptor.get(player, wheelIndex);
 		if (sel == null || sel.getWheelContent().size() <= 1) return;
 		wheel = sel;
 		Minecraft.getInstance().mouseHandler.releaseMouse();
 	}
 
 	private static void disableWheel(@Nullable Player player) {
+		wheelIndex = 0;
 		suppress = false;
 		if (wheel == null) return;
 		if (player != null && Minecraft.getInstance().screen == null) {
@@ -68,18 +69,29 @@ public class WheelHandler {
 		if (wheel == null) return false;
 		var player = Minecraft.getInstance().player;
 		if (player != null) {
+
 			if (event.getButton() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
-				int index = getSel();
-				if (index >= 0) {
-					L2ItemSelector.PACKET_HANDLER.toServer(SetSelectedToServer.of(index,
-							ItemSelectionListener.INSTANCE.getID()));
+				if (event.getAction() == GLFW.GLFW_RELEASE) {
+					int index = getSel();
+					if (index >= 0) {
+						L2ItemSelector.PACKET_HANDLER.toServer(SetSelectedToServer.of(index,
+								ItemSelectionListener.INSTANCE.getID()));
+					}
+					disableWheel(player);
+					suppress = true;
 				}
+				event.setCanceled(true);
+				return true;
+			} else if (event.getButton() == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+				if (event.getAction() == GLFW.GLFW_RELEASE) {
+					wheelIndex++;
+				}
+				event.setCanceled(true);
+				return true;
 			}
+
 		}
-		disableWheel(player);
-		suppress = true;
-		event.setCanceled(true);
-		return true;
+		return false;
 	}
 
 }

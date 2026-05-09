@@ -68,12 +68,12 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 	}
 
 	@Override
-	public Optional<WheelAdaptor> get(@Nullable Player player) {
+	public Optional<WheelAdaptor> get(@Nullable Player player, int wheelIndex) {
 		if (player == null) return Optional.empty();
 		var sel = IItemSelector.getSelection(player);
 		if (sel == null) return Optional.empty();
 		if (sel.selector() instanceof WheelAdaptor.Provider pvd)
-			return pvd.get(player);
+			return pvd.get(player, wheelIndex);
 		return ClientHandler.get(sel);
 	}
 

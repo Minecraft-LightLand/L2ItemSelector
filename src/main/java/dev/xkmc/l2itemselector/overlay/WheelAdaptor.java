@@ -13,12 +13,12 @@ import java.util.Optional;
 public interface WheelAdaptor {
 
 	@Nullable
-	static WheelAdaptor get(@Nullable Player player) {
+	static WheelAdaptor get(@Nullable Player player, int wheelIndex) {
 		if (player == null) return null;
 		var sel = SelectionRegistry.getClientActiveListener(player);
 		if (sel.isEmpty()) return null;
 		if (!(sel.get() instanceof Provider pvd)) return null;
-		return pvd.get(player).orElse(null);
+		return pvd.get(player, wheelIndex).orElse(null);
 	}
 
 	List<Entry> getWheelContent();
@@ -87,7 +87,7 @@ public interface WheelAdaptor {
 
 	interface Provider {
 
-		Optional<WheelAdaptor> get(@Nullable Player player);
+		Optional<WheelAdaptor> get(@Nullable Player player, int wheelIndex);
 
 	}
 
