@@ -2,16 +2,14 @@ package dev.xkmc.l2itemselector.select.item;
 
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
-import dev.xkmc.l2itemselector.overlay.TextBox;
+import dev.xkmc.l2itemselector.overlay.ItemWheelEntry;
 import dev.xkmc.l2itemselector.overlay.WheelAdaptor;
 import dev.xkmc.l2itemselector.overlay.WheelHandler;
 import dev.xkmc.l2itemselector.select.ISelectionListener;
 import dev.xkmc.l2itemselector.select.SetSelectedToServer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -51,8 +49,9 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 		var sel = IItemSelector.getSelection(player);
 		if (sel == null) return false;
 		if (WheelHandler.wheel != null) {
-			int current = WheelHandler.keyboardIndex >= 0 ? WheelHandler.keyboardIndex : sel.getIndex(player);
-			int total = sel.getList().size();
+			int idx = WheelHandler.wheel.getIndex(player);
+			int current = WheelHandler.keyboardIndex >= 0 ? WheelHandler.keyboardIndex : Math.max(0, idx);
+			int total = WheelHandler.wheel.getWheelSize();
 			WheelHandler.keyboardIndex = ((current - diff) % total + total) % total;
 			return true;
 		}
@@ -64,18 +63,38 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 	public void handleClientKey(L2Keys key, Player player) {
 		var sel = IItemSelector.getSelection(player);
 		if (sel == null) return;
-		int dir = switch (key) {
-			case UP, LEFT -> -1;
-			case DOWN, RIGHT -> 1;
-			default -> 0;
-		};
-		if (dir == 0) return;
 		if (WheelHandler.wheel != null) {
-			int current = WheelHandler.keyboardIndex >= 0 ? WheelHandler.keyboardIndex : sel.getIndex(player);
-			int total = sel.getList().size();
-			WheelHandler.keyboardIndex = ((current + dir) % total + total) % total;
+			if (key == L2Keys.UP) {
+				int idx = WheelHandler.wheel.getIndex(player);
+				int current = WheelHandler.keyboardIndex >= 0 ? WheelHandler.keyboardIndex : Math.max(0, idx);
+				int total = WheelHandler.wheel.getWheelSize();
+				WheelHandler.keyboardIndex = ((current - 1) % total + total) % total;
+			} else if (key == L2Keys.DOWN) {
+				int idx = WheelHandler.wheel.getIndex(player);
+				int current = WheelHandler.keyboardIndex >= 0 ? WheelHandler.keyboardIndex : Math.max(0, idx);
+				int total = WheelHandler.wheel.getWheelSize();
+				WheelHandler.keyboardIndex = ((current + 1) % total + total) % total;
+			} else if (key == L2Keys.LEFT) {
+				int target = WheelHandler.wheelIndex - 1;
+				if (WheelAdaptor.get(player, target) != null) {
+					WheelHandler.wheelIndex = target;
+					WheelHandler.keyboardIndex = -1;
+				}
+			} else if (key == L2Keys.RIGHT) {
+				int target = WheelHandler.wheelIndex + 1;
+				if (WheelAdaptor.get(player, target) != null) {
+					WheelHandler.wheelIndex = target;
+					WheelHandler.keyboardIndex = -1;
+				}
+			}
 		} else {
-			toServer(sel.move(dir, player));
+			int dir = switch (key) {
+				case UP, DOWN, LEFT, RIGHT -> key == L2Keys.UP || key == L2Keys.LEFT ? -1 : 1;
+				default -> 0;
+			};
+			if (dir != 0) {
+				toServer(sel.move(dir, player));
+			}
 		}
 	}
 
@@ -89,79 +108,74 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 		return WheelHandler.wheel != null;
 	}
 
+	private static final int MAX_PAGE_SIZE = 9;
+
 	@Override
-	public Optional<WheelAdaptor> get(@Nullable Player player) {
+	public Optional<WheelAdaptor> get(@Nullable Player player, int wheelIndex) {
 		if (player == null) return Optional.empty();
 		var sel = IItemSelector.getSelection(player);
 		if (sel == null) return Optional.empty();
-		return ClientHandler.get(sel);
+		if (sel.selector() instanceof WheelAdaptor.Provider pvd)
+			return pvd.get(player, wheelIndex);
+		return ClientHandler.get(sel, wheelIndex);
 	}
 
 	static class ClientHandler {
 
-		public static Optional<WheelAdaptor> get(IItemSelector.Holder sel) {
-			return Optional.of(new ItemWheel(sel));
+		private static final int MAX = 9;
+
+		public static Optional<WheelAdaptor> get(IItemSelector.Holder sel, int wheelIndex) {
+			var list = sel.getDisplayList();
+			int size = list.size();
+			if (size <= 1) return Optional.empty();
+
+			int pageCount = (size + MAX - 1) / MAX;
+			if (size % MAX == 1 && pageCount > 1) pageCount--;
+
+			if (wheelIndex < 0 || wheelIndex >= pageCount) return Optional.empty();
+
+			int start = wheelIndex * MAX;
+			int end = wheelIndex == pageCount - 1 && size % MAX == 1 && pageCount > 0
+					? size : Math.min(start + MAX, size);
+			return Optional.of(new Wheel(sel, start, end));
 		}
 
 	}
 
-	record ItemWheel(IItemSelector.Holder sel) implements WheelAdaptor {
+	public record Wheel(IItemSelector.Holder sel, int start, int end) implements WheelAdaptor.ItemWheel {
+
+		@Override
+		public void select(int index) {
+			int globalIndex = start + index;
+			L2ItemSelector.PACKET_HANDLER.toServer(SetSelectedToServer.of(globalIndex,
+					ItemSelectionListener.INSTANCE.getID()));
+		}
 
 		@Override
 		public List<Entry> getWheelContent() {
-			var src = sel.getDisplayList();
+			var src = sel.getDisplayList().subList(start, end);
 			var ans = new ArrayList<Entry>();
 			for (var e : src) {
-				ans.add(new ItemEntry(e));
+				ans.add(new ItemWheelEntry(e));
 			}
 			return ans;
 		}
 
 		@Override
+		public int getWheelSize() {
+			return end - start;
+		}
+
+		@Override
+		public ItemStack getItem(int index) {
+			return sel.getDisplayList().get(start + index);
+		}
+
+		@Override
 		public int getIndex(Player player) {
-			return sel.getIndex(player);
-		}
-
-		@Override
-		public void render(GuiGraphics g, Player player) {
-			WheelAdaptor.super.render(g, player);
-			int index = getMouseSelect(player);
-			if (index < 0 && WheelHandler.keyboardIndex >= 0) index = WheelHandler.keyboardIndex;
-			if (index < 0) index = sel.getIndex(player);
-			ItemStack stack = sel.getDisplayList().get(index);
-			int x0 = g.guiWidth() / 2, y0 = g.guiHeight() / 2;
-			float r = Math.min(x0, y0) / 2f; // 轮盘半径
-			float s = r * 0.02f;
-			g.pose().pushPose();
-			g.pose().translate(x0, y0, 0);
-			g.pose().scale(s, s, s);
-			g.renderItem(stack, -8, -16);
-			g.pose().popPose();
-
-			var text = stack.getHoverName();
-			var font = Minecraft.getInstance().font;
-			int y = (int) (y0 + s * 3);
-			for (var line : font.split(text, (int) r)) {
-				g.drawString(font, line, x0 - font.width(line) / 2, y, 0xffffff, false);
-				y += font.lineHeight + 1;
-			}
-
-		}
-	}
-
-	record ItemEntry(ItemStack stack) implements WheelAdaptor.Entry {
-
-		@Override
-		public void render(GuiGraphics g, float x0, float y0, float ai, float r0, float r, float da, float s) {
-			s *= Math.min(r * 0.015f, da * r0 / 16f);
-
-			float dx = x0 + Mth.cos(ai) * r0;
-			float dy = y0 + Mth.sin(ai) * r0;
-			g.pose().pushPose();
-			g.pose().translate(dx, dy, 0);
-			g.pose().scale(s, s, s);
-			g.renderItem(stack, -8, -8);
-			g.pose().popPose();
+			int global = sel.getIndex(player);
+			if (global >= start && global < end) return global - start;
+			return -1;
 		}
 
 	}

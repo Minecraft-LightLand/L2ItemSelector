@@ -1,9 +1,11 @@
 package dev.xkmc.l2itemselector.overlay;
 
+import dev.xkmc.l2itemselector.overlay.WheelAdaptor.ClientHandler;
 import dev.xkmc.l2itemselector.select.SelectionRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -12,49 +14,58 @@ import java.util.Optional;
 public interface WheelAdaptor {
 
 	@Nullable
-	static WheelAdaptor get(@Nullable Player player) {
+	static WheelAdaptor get(@Nullable Player player, int wheelIndex) {
 		if (player == null) return null;
 		var sel = SelectionRegistry.getClientActiveListener(player);
 		if (sel.isEmpty()) return null;
 		if (!(sel.get() instanceof Provider pvd)) return null;
-		return pvd.get(player).orElse(null);
+		return pvd.get(player, wheelIndex).orElse(null);
 	}
 
 	List<Entry> getWheelContent();
 
+	default int getWheelSize() {
+		return getWheelContent().size();
+	}
+
 	int getIndex(Player player);
 
+	void select(int index);
+
+	default void onRelease(int index) {
+		select(index);
+	}
+
+	default void shortPress(Player player) {
+	}
+
 	default int getMouseSelect(Player player) {
-		var list = getWheelContent();
-		int n = list.size();
+		int n = getWheelSize();
 		if (n <= 1) return -1;
 		float da = (float) (Math.PI * 2 / n);
 		float a0 = (float) (-Math.PI / 2);
 		var win = Minecraft.getInstance().getWindow();
 		int x0 = win.getGuiScaledWidth() / 2, y0 = win.getGuiScaledHeight() / 2;
-
-		float r = Math.min(x0, y0) / 2f; // 轮盘半径
-		float r0 = Math.max(40, r * 0.5f); // 物品渲染位置
-		float r1 = r * 0.66f; //空心部分半径
-
+		float r = Math.min(x0, y0) / 2f;
+		float r1 = r * 0.66f;
 		return ClientHandler.getMouseSelect(x0, y0, a0, da, n, r, r1);
 	}
 
-	default void render(GuiGraphics g, Player player) {
+	default int render(GuiGraphics g, Player player) {
 		var list = WheelHandler.wheel.getWheelContent();
 		int n = list.size();
-		if (n <= 1) return;
+		if (n <= 1) return -1;
 		float da = (float) (Math.PI * 2 / n);
 		int x0 = g.guiWidth() / 2, y0 = g.guiHeight() / 2;
-		float r = Math.min(x0, y0) / 1.5f; // 轮盘半径
-		float r0 = Math.max(40, r * 0.85f); // 物品渲染位置
-		float r1 = r * 0.5f; //空心部分半径
+		float r = Math.min(x0, y0) / 1.5f;
+		float r0 = Math.max(40, r * 0.85f);
+		float r1 = r * 0.5f;
 
-		float dr0 = r * 0.0f; // 未选中偏移
-		float dr1 = r * 0.0f; // 选中偏移
-		float s = 1.1f; // 选中放大
+		float dr0 = 0;
+		float dr1 = 0;
+		float s = 1.1f;
 
-		int ma = WheelHandler.wheel.getMouseSelect(player);
+		int ma = ClientHandler.getMouseSelect(x0, y0, (float) (-Math.PI / 2), da, n, r, r1);
 		if (ma >= 0) {
 			WheelHandler.keyboardIndex = -1;
 		} else if (WheelHandler.keyboardIndex >= 0) {
@@ -87,9 +98,17 @@ public interface WheelAdaptor {
 		float arcAngle = WheelHandler.keyboardIndex >= 0
 				? a0 + da * WheelHandler.keyboardIndex
 				: (float) Math.atan2(my, mx);
-		int arcColor = ma < 0 ? 0x80ff4444 : 0xffffffff;
+		int arcColor;
+		float distSq = mx * mx + my * my;
+		if (distSq > (r * 1.25f) * (r * 1.25f)) {
+			arcColor = 0x8000cccc;
+		} else if (ma < 0) {
+			arcColor = 0x80ff4444;
+		} else {
+			arcColor = 0xffffffff;
+		}
 		WheelOverlay.fillFan(g, x0, y0, arcAngle, da, r1 - 1.5f, r1 - 4f, 0, 0, arcColor, arcColor);
-		if (ma < 0 || ma != selectedIndex) {
+		if (selectedIndex >= 0 && (ma < 0 || ma != selectedIndex)) {
 			float selAngle = a0 + da * selectedIndex;
 			WheelOverlay.fillFan(g, x0, y0, selAngle, da, r1 + 2.5f, r1, 0, 0, 0xffffffff, 0xffffffff);
 		}
@@ -105,6 +124,7 @@ public interface WheelAdaptor {
 			WheelOverlay.drawSeparator(g, x0, y0, a, r1, r * 1.25f, 0.005f, 0.0025f, innerColor, outerColor);
 		}
 		g.flush();
+		return ma;
 	}
 
 	class ClientHandler {
@@ -123,13 +143,44 @@ public interface WheelAdaptor {
 
 	interface Provider {
 
-		Optional<WheelAdaptor> get(@Nullable Player player);
+		Optional<WheelAdaptor> get(@Nullable Player player, int wheelIndex);
 
 	}
 
 	interface Entry {
 
 		void render(GuiGraphics g, float x0, float y0, float ai, float r0, float r, float da, float s);
+
+	}
+
+	interface ItemWheel extends WheelAdaptor {
+
+		ItemStack getItem(int index);
+
+		@Override
+		default int render(GuiGraphics g, Player player) {
+			int ma = WheelAdaptor.super.render(g, player);
+			int index = ma >= 0 ? ma : getIndex(player);
+			ItemStack stack = getItem(index);
+			int x0 = g.guiWidth() / 2, y0 = g.guiHeight() / 2;
+			float r = Math.min(x0, y0) / 2f;
+			float s = r * 0.02f;
+			g.pose().pushPose();
+			g.pose().translate(x0, y0, 0);
+			g.pose().scale(s, s, s);
+			g.renderItem(stack, -8, -16);
+			g.renderItemDecorations(Minecraft.getInstance().font, stack, -8, -16);
+			g.pose().popPose();
+
+			var text = stack.getHoverName();
+			var font = Minecraft.getInstance().font;
+			int y = (int) (y0 + s * 3);
+			for (var line : font.split(text, (int) r)) {
+				g.drawString(font, line, x0 - font.width(line) / 2, y, 0xffffff, false);
+				y += font.lineHeight + 1;
+			}
+			return ma;
+		}
 
 	}
 
