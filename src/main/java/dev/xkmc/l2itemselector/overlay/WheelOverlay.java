@@ -37,7 +37,34 @@ public class WheelOverlay implements LayeredDraw.Layer {
 			float y3 = y1 + Mth.sin(a) * r0;
 			vc.addVertex(mat, x3, y3, pZ).setColor(c0);
 		}
+	}
 
+
+
+	public static void drawSeparator(GuiGraphics g, float x0, float y0, float a, float rInner, float rOuter, float innerHalfW, float outerHalfW, int innerColor, int outerColor) {
+		Matrix4f mat = g.pose().last().pose();
+		VertexConsumer vc = g.bufferSource().getBuffer(Shard.GUI_FAN);
+		int seg = 8;
+		for (int i = 0; i <= seg; i++) {
+			float t = (float) i / seg;
+			float et = (float) Math.sqrt(t);
+			float r = rInner + (rOuter - rInner) * t;
+			float halfW = innerHalfW + (outerHalfW - innerHalfW) * t;
+
+			int aCol = (int) (((innerColor >> 24) & 0xFF) * (1 - et) + ((outerColor >> 24) & 0xFF) * et);
+			int rCol = (int) (((innerColor >> 16) & 0xFF) * (1 - et) + ((outerColor >> 16) & 0xFF) * et);
+			int gCol = (int) (((innerColor >> 8) & 0xFF) * (1 - et) + ((outerColor >> 8) & 0xFF) * et);
+			int bCol = (int) ((innerColor & 0xFF) * (1 - et) + (outerColor & 0xFF) * et);
+			int color = (aCol << 24) | (rCol << 16) | (gCol << 8) | bCol;
+
+			float lx = x0 + Mth.cos(a - halfW) * r;
+			float ly = y0 + Mth.sin(a - halfW) * r;
+			float rx = x0 + Mth.cos(a + halfW) * r;
+			float ry = y0 + Mth.sin(a + halfW) * r;
+
+			vc.addVertex(mat, lx, ly, 0).setColor(color);
+			vc.addVertex(mat, rx, ry, 0).setColor(color);
+		}
 	}
 
 

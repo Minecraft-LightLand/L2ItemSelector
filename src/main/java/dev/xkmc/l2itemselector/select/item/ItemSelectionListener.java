@@ -4,6 +4,7 @@ import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
 import dev.xkmc.l2itemselector.overlay.TextBox;
 import dev.xkmc.l2itemselector.overlay.WheelAdaptor;
+import dev.xkmc.l2itemselector.overlay.WheelHandler;
 import dev.xkmc.l2itemselector.select.ISelectionListener;
 import dev.xkmc.l2itemselector.select.SetSelectedToServer;
 import net.minecraft.client.Minecraft;
@@ -49,6 +50,12 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 	public boolean handleClientScroll(int diff, Player player) {
 		var sel = IItemSelector.getSelection(player);
 		if (sel == null) return false;
+		if (WheelHandler.wheel != null) {
+			int current = WheelHandler.keyboardIndex >= 0 ? WheelHandler.keyboardIndex : sel.getIndex(player);
+			int total = sel.getList().size();
+			WheelHandler.keyboardIndex = ((current - diff) % total + total) % total;
+			return true;
+		}
 		toServer(sel.move(-diff, player));
 		return true;
 	}
@@ -57,16 +64,29 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 	public void handleClientKey(L2Keys key, Player player) {
 		var sel = IItemSelector.getSelection(player);
 		if (sel == null) return;
-		if (key == L2Keys.UP) {
-			toServer(sel.move(-1, player));
-		} else if (key == L2Keys.DOWN) {
-			toServer(sel.move(1, player));
+		int dir = switch (key) {
+			case UP, LEFT -> -1;
+			case DOWN, RIGHT -> 1;
+			default -> 0;
+		};
+		if (dir == 0) return;
+		if (WheelHandler.wheel != null) {
+			int current = WheelHandler.keyboardIndex >= 0 ? WheelHandler.keyboardIndex : sel.getIndex(player);
+			int total = sel.getList().size();
+			WheelHandler.keyboardIndex = ((current + dir) % total + total) % total;
+		} else {
+			toServer(sel.move(dir, player));
 		}
 	}
 
 	@Override
 	public boolean handleClientNumericKey(int i, BooleanSupplier consumeClick) {
 		return false;
+	}
+
+	@Override
+	public boolean scrollBypassShift() {
+		return WheelHandler.wheel != null;
 	}
 
 	@Override
@@ -106,6 +126,7 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 		public void render(GuiGraphics g, Player player) {
 			WheelAdaptor.super.render(g, player);
 			int index = getMouseSelect(player);
+			if (index < 0 && WheelHandler.keyboardIndex >= 0) index = WheelHandler.keyboardIndex;
 			if (index < 0) index = sel.getIndex(player);
 			ItemStack stack = sel.getDisplayList().get(index);
 			int x0 = g.guiWidth() / 2, y0 = g.guiHeight() / 2;
@@ -119,9 +140,11 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 
 			var text = stack.getHoverName();
 			var font = Minecraft.getInstance().font;
-			g.renderTooltip(font, stack.getHoverName(), 0, 0);
-			TextBox box = new TextBox(g, 1, 0, x0, (int) (y0 + s * 3), (int) r);
-			box.renderLongText(font, List.of(text));
+			int y = (int) (y0 + s * 3);
+			for (var line : font.split(text, (int) r)) {
+				g.drawString(font, line, x0 - font.width(line) / 2, y, 0xffffff, false);
+				y += font.lineHeight + 1;
+			}
 
 		}
 	}
