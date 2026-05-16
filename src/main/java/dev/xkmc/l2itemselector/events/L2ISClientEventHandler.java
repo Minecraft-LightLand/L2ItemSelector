@@ -1,7 +1,6 @@
 package dev.xkmc.l2itemselector.events;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import dev.xkmc.l2core.util.Proxy;
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2ISConfig;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
@@ -32,7 +31,7 @@ public class L2ISClientEventHandler {
 
 	@SubscribeEvent
 	public static void inputEvent(GenericKeyEvent event) {
-		LocalPlayer player = Proxy.getClientPlayer();
+		LocalPlayer player = Minecraft.getInstance().player;
 		if (player == null) return;
 		var sel = SelectionRegistry.getClientActiveListener(player);
 		if (sel.isEmpty()) return;
@@ -54,7 +53,7 @@ public class L2ISClientEventHandler {
 	@SubscribeEvent
 	public static void keyEvent(InputEvent.Key event) {
 		NeoForge.EVENT_BUS.post(new GenericKeyEvent(e -> e.getType() != InputConstants.Type.MOUSE && e.getValue() == event.getKey(), event.getAction()));
-		LocalPlayer player = Proxy.getClientPlayer();
+		LocalPlayer player = Minecraft.getInstance().player;
 		if (player == null) return;
 		var sel = SelectionRegistry.getClientActiveListener(player);
 		if (sel.isEmpty()) return;
@@ -75,7 +74,7 @@ public class L2ISClientEventHandler {
 		scroll += d0;
 		int i = (int) scroll;
 		scroll -= i;
-		LocalPlayer player = Proxy.getClientPlayer();
+		LocalPlayer player = Minecraft.getInstance().player;
 		if (player == null) return;
 		var sel = SelectionRegistry.getClientActiveListener(player);
 		if (sel.isEmpty()) return;

@@ -1,10 +1,10 @@
 package dev.xkmc.l2itemselector.select.item;
 
 import com.mojang.datafixers.util.Pair;
-import dev.xkmc.l2core.util.Proxy;
 import dev.xkmc.l2itemselector.overlay.ItemSelSideBar;
 import dev.xkmc.l2itemselector.overlay.SideBar;
 import dev.xkmc.l2itemselector.overlay.TextBox;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -33,7 +33,7 @@ public class ItemSelectionOverlay extends ItemSelSideBar<ItemSelectionOverlay.It
 
 	@Override
 	public Pair<List<ItemStack>, Integer> getItems() {
-		LocalPlayer player = Proxy.getClientPlayer();
+		LocalPlayer player = Minecraft.getInstance().player;
 		if (player == null) return Pair.of(List.of(), 0);
 		var sel = IItemSelector.getSelection(player);
 		assert sel != null;
@@ -52,16 +52,16 @@ public class ItemSelectionOverlay extends ItemSelSideBar<ItemSelectionOverlay.It
 
 	@Override
 	public ItemSelSignature getSignature() {
-		LocalPlayer player = Proxy.getClientPlayer();
+		LocalPlayer player = Minecraft.getInstance().player;
 		if (player == null) return new ItemSelSignature(EMPTY, 0, 0);
-		var sel = IItemSelector.getSelection(Proxy.getClientPlayer());
+		var sel = IItemSelector.getSelection(Minecraft.getInstance().player);
 		if (sel == null) return new ItemSelSignature(EMPTY, 0, 0);
 		return new ItemSelSignature(sel.selector().getID(), sel.getIndex(player), sel.getSelHash());
 	}
 
 	@Override
 	public boolean isScreenOn() {
-		LocalPlayer player = Proxy.getClientPlayer();
+		LocalPlayer player = Minecraft.getInstance().player;
 		if (player == null) return false;
 		return ItemSelectionListener.INSTANCE.isClientActive(player);
 	}
@@ -83,7 +83,7 @@ public class ItemSelectionOverlay extends ItemSelSideBar<ItemSelectionOverlay.It
 	}
 
 	protected int getYOffset(int height) {
-		LocalPlayer player = Proxy.getClientPlayer();
+		LocalPlayer player = Minecraft.getInstance().player;
 		assert player != null;
 		var sel = IItemSelector.getSelection(player);
 		assert sel != null;
