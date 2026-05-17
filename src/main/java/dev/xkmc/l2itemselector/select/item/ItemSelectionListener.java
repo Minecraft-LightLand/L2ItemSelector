@@ -8,7 +8,6 @@ import dev.xkmc.l2itemselector.overlay.WheelHandler;
 import dev.xkmc.l2itemselector.select.ISelectionListener;
 import dev.xkmc.l2itemselector.select.SetSelectedToServer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -31,7 +30,6 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 	@Override
 	public boolean isClientActive(Player player) {
 		if (Minecraft.getInstance().screen != null) return false;
-		if (Screen.hasAltDown()) return false;
 		var sel = IItemSelector.getSelection(player);
 		return sel != null;
 	}
