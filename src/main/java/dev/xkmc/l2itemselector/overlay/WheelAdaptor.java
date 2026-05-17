@@ -129,10 +129,27 @@ public interface WheelAdaptor {
 		boolean leftHeld = GLFW.glfwGetMouseButton(
 				Minecraft.getInstance().getWindow().getWindow(),
 				GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
-		if (leftHeld && ma >= 0) {
+
+		boolean inWheel = distSq <= switchR * switchR;
+		boolean inCenter = distSq <= r1 * r1;
+		boolean inOptions = inWheel && !inCenter;
+
+		boolean hasLeftWheel = WheelAdaptor.get(player, WheelHandler.wheelIndex - 1) != null;
+		boolean hasRightWheel = WheelAdaptor.get(player, WheelHandler.wheelIndex + 1) != null;
+		boolean canSwitchWheel = (mx < 0 && hasLeftWheel) || (mx >= 0 && hasRightWheel);
+
+		if (leftHeld && inOptions) {
 			arcColor = 0xfff4852b;
-		} else if (rightHeld && canSwitch) {
+		} else if (leftHeld && !inWheel && canSwitchWheel) {
 			arcColor = 0x800088ff;
+		} else if (leftHeld && !inWheel && !canSwitchWheel) {
+			arcColor = 0xfff4852b;
+		} else if (rightHeld && inOptions) {
+			arcColor = 0xffffffff;
+		} else if (rightHeld && !inWheel) {
+			arcColor = 0x80ff4444;
+		} else if (rightHeld && inCenter) {
+			arcColor = 0x80ff4444;
 		} else if (ma < 0 || rightHeld) {
 			arcColor = 0x80ff4444;
 		} else {
