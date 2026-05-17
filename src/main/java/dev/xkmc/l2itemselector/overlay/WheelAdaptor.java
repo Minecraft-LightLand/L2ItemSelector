@@ -74,6 +74,18 @@ public interface WheelAdaptor {
 		int selectedIndex = WheelHandler.wheel.getIndex(player);
 		float a0 = (float) (-Math.PI / 2);
 		WheelOverlay.fillFan(g, x0, y0, a0, (float) (Math.PI * 2), r * 1.25f, 0, 0, 0, 0x00000000, 0x60000000);
+		float switchR = r * 1.25f;
+		float sideWidth = x0 - switchR;
+		boolean hasLeft = WheelAdaptor.get(player, WheelHandler.wheelIndex - 1) != null;
+		boolean hasRight = WheelAdaptor.get(player, WheelHandler.wheelIndex + 1) != null;
+		if (hasLeft) {
+			WheelOverlay.drawSideGradient(g, x0, y0, true, sideWidth, 0x60000000, 0x00000000);
+			g.flush();
+		}
+		if (hasRight) {
+			WheelOverlay.drawSideGradient(g, x0, y0, false, sideWidth, 0x60000000, 0x00000000);
+			g.flush();
+		}
 		for (int i = 0; i < n; i++) {
 			float ai = a0 + da * i;
 			if (ma == i) {
@@ -84,24 +96,34 @@ public interface WheelAdaptor {
 				WheelOverlay.fillFan(g, x0, y0, ai, da, r0, r1, dr0, 0, 0x00ffffff, 0x1fffffff);
 			}
 		}
+		var mh = Minecraft.getInstance().mouseHandler;
+		var win = Minecraft.getInstance().getWindow();
+		float mx = (float) mh.xpos() * win.getGuiScaledWidth() / win.getScreenWidth() - x0;
+		float my = (float) mh.ypos() * win.getGuiScaledHeight() / win.getScreenHeight() - y0;
+		float distSq = mx * mx + my * my;
 		g.flush();
 		for (int i = 0; i < n; i++) {
 			float ai = a0 + da * i;
 			list.get(i).render(g, x0, y0, ai, r0, r, da, ma == i ? s : 1);
 		}
 		g.flush();
+		boolean canSwitch = distSq > switchR * switchR && (
+				mx < 0 && hasLeft || mx >= 0 && hasRight);
+		if (distSq > switchR * switchR) {
+			if (mx < 0 && hasLeft) {
+				WheelOverlay.drawSideGradient(g, x0, y0, true, sideWidth, 0x600088ff, 0x000088ff);
+			} else if (mx >= 0 && hasRight) {
+				WheelOverlay.drawSideGradient(g, x0, y0, false, sideWidth, 0x600088ff, 0x000088ff);
+			}
+		}
+		g.flush();
 		WheelOverlay.fillFan(g, x0, y0, a0, (float) (Math.PI * 2), r1 + 1f, r1, 0, 0, 0x80ffffff, 0x80ffffff);
-		var mh = Minecraft.getInstance().mouseHandler;
-		var win = Minecraft.getInstance().getWindow();
-		float mx = (float) mh.xpos() * win.getGuiScaledWidth() / win.getScreenWidth() - x0;
-		float my = (float) mh.ypos() * win.getGuiScaledHeight() / win.getScreenHeight() - y0;
 		float arcAngle = WheelHandler.keyboardIndex >= 0
 				? a0 + da * WheelHandler.keyboardIndex
 				: (float) Math.atan2(my, mx);
 		int arcColor;
-		float distSq = mx * mx + my * my;
-		if (distSq > (r * 1.25f) * (r * 1.25f)) {
-			arcColor = 0x8000cccc;
+		if (canSwitch) {
+			arcColor = 0x600088ff;
 		} else if (ma < 0) {
 			arcColor = 0x80ff4444;
 		} else {

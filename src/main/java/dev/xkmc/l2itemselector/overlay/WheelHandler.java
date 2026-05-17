@@ -129,6 +129,8 @@ public class WheelHandler {
 						if (WheelAdaptor.get(player, target) != null) {
 							wheelIndex = target;
 							keyboardIndex = -1;
+						} else {
+							closeWheel(player);
 						}
 					}
 				}

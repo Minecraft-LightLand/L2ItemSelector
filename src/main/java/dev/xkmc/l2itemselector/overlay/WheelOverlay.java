@@ -41,6 +41,31 @@ public class WheelOverlay implements LayeredDraw.Layer {
 
 
 
+	public static void drawSideGradient(GuiGraphics g, float x0, float y0, boolean left, float width, int outerColor, int innerColor) {
+		Matrix4f mat = g.pose().last().pose();
+		VertexConsumer vc = g.bufferSource().getBuffer(Shard.GUI_GRADIENT);
+		float xOuter = left ? 0 : 2 * x0;
+		float xInner = left ? width : 2 * x0 - width;
+		float screenH = g.guiHeight();
+		if (left) {
+			vc.addVertex(mat, xOuter, 0, 0).setColor(outerColor);
+			vc.addVertex(mat, xOuter, screenH, 0).setColor(outerColor);
+			vc.addVertex(mat, xInner, screenH, 0).setColor(innerColor);
+			vc.addVertex(mat, xOuter, 0, 0).setColor(outerColor);
+			vc.addVertex(mat, xInner, screenH, 0).setColor(innerColor);
+			vc.addVertex(mat, xInner, 0, 0).setColor(innerColor);
+		} else {
+			vc.addVertex(mat, xOuter, 0, 0).setColor(outerColor);
+			vc.addVertex(mat, xInner, 0, 0).setColor(innerColor);
+			vc.addVertex(mat, xInner, screenH, 0).setColor(innerColor);
+			vc.addVertex(mat, xOuter, 0, 0).setColor(outerColor);
+			vc.addVertex(mat, xInner, screenH, 0).setColor(innerColor);
+			vc.addVertex(mat, xOuter, screenH, 0).setColor(outerColor);
+		}
+	}
+
+
+
 	public static void drawSeparator(GuiGraphics g, float x0, float y0, float a, float rInner, float rOuter, float innerHalfW, float outerHalfW, int innerColor, int outerColor) {
 		Matrix4f mat = g.pose().last().pose();
 		VertexConsumer vc = g.bufferSource().getBuffer(Shard.GUI_FAN);
@@ -76,6 +101,14 @@ public class WheelOverlay implements LayeredDraw.Layer {
 
 		public static final RenderType GUI_FAN = create("gui_fan",
 				DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLE_STRIP, 786432,
+				RenderType.CompositeState.builder()
+						.setShaderState(RENDERTYPE_GUI_SHADER)
+						.setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+						.setDepthTestState(LEQUAL_DEPTH_TEST)
+						.createCompositeState(false));
+
+		private static final RenderType GUI_GRADIENT = create("gui_gradient",
+				DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLES, 2048,
 				RenderType.CompositeState.builder()
 						.setShaderState(RENDERTYPE_GUI_SHADER)
 						.setTransparencyState(TRANSLUCENT_TRANSPARENCY)
