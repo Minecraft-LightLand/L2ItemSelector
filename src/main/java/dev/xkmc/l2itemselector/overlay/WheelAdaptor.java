@@ -7,6 +7,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 import java.util.Optional;
@@ -111,9 +112,9 @@ public interface WheelAdaptor {
 				mx < 0 && hasLeft || mx >= 0 && hasRight);
 		if (distSq > switchR * switchR) {
 			if (mx < 0 && hasLeft) {
-				WheelOverlay.drawSideGradient(g, x0, y0, true, sideWidth, 0x600088ff, 0x000088ff);
+				WheelOverlay.drawSideGradient(g, x0, y0, true, sideWidth, 0x800088ff, 0x000088ff);
 			} else if (mx >= 0 && hasRight) {
-				WheelOverlay.drawSideGradient(g, x0, y0, false, sideWidth, 0x600088ff, 0x000088ff);
+				WheelOverlay.drawSideGradient(g, x0, y0, false, sideWidth, 0x800088ff, 0x000088ff);
 			}
 		}
 		g.flush();
@@ -122,9 +123,17 @@ public interface WheelAdaptor {
 				? a0 + da * WheelHandler.keyboardIndex
 				: (float) Math.atan2(my, mx);
 		int arcColor;
-		if (canSwitch) {
-			arcColor = 0x600088ff;
-		} else if (ma < 0) {
+		boolean rightHeld = GLFW.glfwGetMouseButton(
+				Minecraft.getInstance().getWindow().getWindow(),
+				GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
+		boolean leftHeld = GLFW.glfwGetMouseButton(
+				Minecraft.getInstance().getWindow().getWindow(),
+				GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
+		if (leftHeld && ma >= 0) {
+			arcColor = 0xfff4852b;
+		} else if (rightHeld && canSwitch) {
+			arcColor = 0x800088ff;
+		} else if (ma < 0 || rightHeld) {
 			arcColor = 0x80ff4444;
 		} else {
 			arcColor = 0xffffffff;
