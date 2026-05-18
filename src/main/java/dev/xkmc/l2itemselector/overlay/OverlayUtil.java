@@ -1,11 +1,12 @@
 package dev.xkmc.l2itemselector.overlay;
 
-import dev.xkmc.l2itemselector.init.data.L2ISConfig;
+import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
 
@@ -13,23 +14,23 @@ import java.util.List;
 
 public class OverlayUtil implements ClientTooltipPositioner {
 
-	private static int getBGColor() {
-		return (int) (Math.round(L2ISConfig.CLIENT.infoAlpha.get() * 255)) << 24 | 0x100010;
-	}
-
-	public int bg = getBGColor();
-	public int bs = 0x505000FF;
-	public int be = 0x5028007f;
-	public int tc = 0xFFFFFFFF;
+	public static final Identifier LIGHT = L2ItemSelector.loc("light");
+	public static final Identifier MENU = L2ItemSelector.loc("menu");
 
 	protected final GuiGraphicsExtractor g;
 	protected final int x0, y0, maxW;
+	protected Identifier tex = LIGHT;
 
 	public OverlayUtil(GuiGraphicsExtractor g, int x0, int y0, int maxW) {
 		this.g = g;
 		this.x0 = x0;
 		this.y0 = y0;
 		this.maxW = maxW < 0 ? getMaxWidth() : maxW;
+	}
+
+	public OverlayUtil setTex(Identifier id) {
+		this.tex = id;
+		return this;
 	}
 
 	public int getMaxWidth() {
@@ -39,7 +40,7 @@ public class OverlayUtil implements ClientTooltipPositioner {
 	public void renderLongText(Font font, List<Component> list) {
 		List<ClientTooltipComponent> ans = list.stream().flatMap(text -> font.split(text, maxW).stream())
 				.map(ClientTooltipComponent::create).toList();
-		g.tooltip(font, ans, x0, y0, this, null);
+		g.tooltip(font, ans, x0, y0, this, tex);
 	}
 
 	@Override
