@@ -5,6 +5,7 @@ import dev.xkmc.l2core.util.Proxy;
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2ISConfig;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
+import dev.xkmc.l2itemselector.overlay.WheelAdaptor;
 import dev.xkmc.l2itemselector.overlay.WheelHandler;
 import dev.xkmc.l2itemselector.select.SelectionRegistry;
 import net.minecraft.client.Minecraft;
@@ -36,9 +37,41 @@ public class L2ISClientEventHandler {
 		if (player == null) return;
 		var sel = SelectionRegistry.getClientActiveListener(player);
 		if (sel.isEmpty()) return;
+
 		for (L2Keys k : L2Keys.values()) {
-			if (event.test(k.map.getKey()) &&
-					event.getAction() == InputConstants.PRESS) {
+			if (event.test(k.map.getKey()) && event.getAction() == InputConstants.PRESS) {
+				if (WheelHandler.wheel != null) {
+					switch (k) {
+						case UP -> {
+							int idx = WheelHandler.wheel.getIndex(player);
+							int current = WheelHandler.keyboardIndex >= 0 ? WheelHandler.keyboardIndex : Math.max(0, idx);
+							int total = WheelHandler.wheel.getWheelSize();
+							WheelHandler.keyboardIndex = ((current - 1) % total + total) % total;
+						}
+						case DOWN -> {
+							int idx = WheelHandler.wheel.getIndex(player);
+							int current = WheelHandler.keyboardIndex >= 0 ? WheelHandler.keyboardIndex : Math.max(0, idx);
+							int total = WheelHandler.wheel.getWheelSize();
+							WheelHandler.keyboardIndex = ((current + 1) % total + total) % total;
+						}
+						case LEFT -> {
+							int target = WheelHandler.wheelIndex - 1;
+							if (WheelAdaptor.get(player, target) != null) {
+								WheelHandler.wheelIndex = target;
+								WheelHandler.keyboardIndex = -1;
+							}
+						}
+						case RIGHT -> {
+							int target = WheelHandler.wheelIndex + 1;
+							if (WheelAdaptor.get(player, target) != null) {
+								WheelHandler.wheelIndex = target;
+								WheelHandler.keyboardIndex = -1;
+							}
+						}
+					}
+					return;
+				}
+
 				sel.get().handleClientKey(k, player);
 				return;
 			}
@@ -48,12 +81,16 @@ public class L2ISClientEventHandler {
 	@SubscribeEvent
 	public static void mouseEvent(InputEvent.MouseButton.Pre event) {
 		if (WheelHandler.handleClick(event)) return;
-		NeoForge.EVENT_BUS.post(new GenericKeyEvent(e -> e.getType() == InputConstants.Type.MOUSE && e.getValue() == event.getButton(), event.getAction()));
+		NeoForge.EVENT_BUS.post(new GenericKeyEvent(
+				e -> e.getType() == InputConstants.Type.MOUSE && e.getValue() == event.getButton(),
+				event.getAction()));
 	}
 
 	@SubscribeEvent
 	public static void keyEvent(InputEvent.Key event) {
-		NeoForge.EVENT_BUS.post(new GenericKeyEvent(e -> e.getType() != InputConstants.Type.MOUSE && e.getValue() == event.getKey(), event.getAction()));
+		NeoForge.EVENT_BUS.post(new GenericKeyEvent(
+				e -> e.getType() != InputConstants.Type.MOUSE && e.getValue() == event.getKey(),
+				event.getAction()));
 		LocalPlayer player = Proxy.getClientPlayer();
 		if (player == null) return;
 		var sel = SelectionRegistry.getClientActiveListener(player);
@@ -63,7 +100,6 @@ public class L2ISClientEventHandler {
 				return;
 			}
 		}
-
 	}
 
 	private static double scroll;
@@ -79,12 +115,25 @@ public class L2ISClientEventHandler {
 		if (player == null) return;
 		var sel = SelectionRegistry.getClientActiveListener(player);
 		if (sel.isEmpty()) return;
-		if (!sel.get().scrollBypassShift() &&
+
+		boolean bypassShift = WheelHandler.wheel != null;
+		if (!bypassShift &&
 				L2ISConfig.CLIENT.selectionScrollRequireShift.get() &&
-				!sel.get().isHoldKeyDown(player)) return;
+				!sel.get().isHoldKeyDown(player)) {
+			return;
+		}
+
+		if (WheelHandler.wheel != null && i != 0) {
+			int idx = WheelHandler.wheel.getIndex(player);
+			int current = WheelHandler.keyboardIndex >= 0 ? WheelHandler.keyboardIndex : Math.max(0, idx);
+			int total = WheelHandler.wheel.getWheelSize();
+			WheelHandler.keyboardIndex = ((current - i) % total + total) % total;
+			event.setCanceled(true);
+			return;
+		}
+
 		if (sel.get().handleClientScroll(i, d0, player)) {
 			event.setCanceled(true);
 		}
 	}
-
 }

@@ -4,7 +4,6 @@ import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
 import dev.xkmc.l2itemselector.overlay.ItemWheelEntry;
 import dev.xkmc.l2itemselector.overlay.WheelAdaptor;
-import dev.xkmc.l2itemselector.overlay.WheelHandler;
 import dev.xkmc.l2itemselector.select.ISelectionListener;
 import dev.xkmc.l2itemselector.select.SetSelectedToServer;
 import net.minecraft.client.Minecraft;
@@ -48,13 +47,6 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 	public boolean handleClientScroll(int diff, Player player) {
 		var sel = IItemSelector.getSelection(player);
 		if (sel == null) return false;
-		if (WheelHandler.wheel != null) {
-			int idx = WheelHandler.wheel.getIndex(player);
-			int current = WheelHandler.keyboardIndex >= 0 ? WheelHandler.keyboardIndex : Math.max(0, idx);
-			int total = WheelHandler.wheel.getWheelSize();
-			WheelHandler.keyboardIndex = ((current - diff) % total + total) % total;
-			return true;
-		}
 		toServer(sel.move(-diff, player));
 		return true;
 	}
@@ -63,38 +55,10 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 	public void handleClientKey(L2Keys key, Player player) {
 		var sel = IItemSelector.getSelection(player);
 		if (sel == null) return;
-		if (WheelHandler.wheel != null) {
-			if (key == L2Keys.UP) {
-				int idx = WheelHandler.wheel.getIndex(player);
-				int current = WheelHandler.keyboardIndex >= 0 ? WheelHandler.keyboardIndex : Math.max(0, idx);
-				int total = WheelHandler.wheel.getWheelSize();
-				WheelHandler.keyboardIndex = ((current - 1) % total + total) % total;
-			} else if (key == L2Keys.DOWN) {
-				int idx = WheelHandler.wheel.getIndex(player);
-				int current = WheelHandler.keyboardIndex >= 0 ? WheelHandler.keyboardIndex : Math.max(0, idx);
-				int total = WheelHandler.wheel.getWheelSize();
-				WheelHandler.keyboardIndex = ((current + 1) % total + total) % total;
-			} else if (key == L2Keys.LEFT) {
-				int target = WheelHandler.wheelIndex - 1;
-				if (WheelAdaptor.get(player, target) != null) {
-					WheelHandler.wheelIndex = target;
-					WheelHandler.keyboardIndex = -1;
-				}
-			} else if (key == L2Keys.RIGHT) {
-				int target = WheelHandler.wheelIndex + 1;
-				if (WheelAdaptor.get(player, target) != null) {
-					WheelHandler.wheelIndex = target;
-					WheelHandler.keyboardIndex = -1;
-				}
-			}
-		} else {
-			int dir = switch (key) {
-				case UP, DOWN, LEFT, RIGHT -> key == L2Keys.UP || key == L2Keys.LEFT ? -1 : 1;
-				default -> 0;
-			};
-			if (dir != 0) {
-				toServer(sel.move(dir, player));
-			}
+		if (key == L2Keys.UP) {
+			toServer(sel.move(-1, player));
+		} else if (key == L2Keys.DOWN) {
+			toServer(sel.move(1, player));
 		}
 	}
 
@@ -102,13 +66,6 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 	public boolean handleClientNumericKey(int i, BooleanSupplier consumeClick) {
 		return false;
 	}
-
-	@Override
-	public boolean scrollBypassShift() {
-		return WheelHandler.wheel != null;
-	}
-
-	private static final int MAX_PAGE_SIZE = 9;
 
 	@Override
 	public Optional<WheelAdaptor> get(@Nullable Player player, int wheelIndex) {
@@ -121,7 +78,6 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 	}
 
 	static class ClientHandler {
-
 		private static final int MAX = 9;
 
 		public static Optional<WheelAdaptor> get(IItemSelector.Holder sel, int wheelIndex) {
@@ -139,7 +95,6 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 					? size : Math.min(start + MAX, size);
 			return Optional.of(new Wheel(sel, start, end));
 		}
-
 	}
 
 	public record Wheel(IItemSelector.Holder sel, int start, int end) implements WheelAdaptor.ItemWheel {
@@ -177,6 +132,5 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 			if (global >= start && global < end) return global - start;
 			return -1;
 		}
-
 	}
 }
