@@ -37,7 +37,7 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 
 		public ColorPalette(int sel, int hover, int close, int switcher) {
 			this(0x00000000, 0x60000000,
-					0x1fffffff & sel, 0x6fffffff & sel, 0x6fffffff & hover,
+					0x1fffffff & sel, 0x6fffffff & sel, 0xDfffffff & hover,
 					sel, hover,
 					0x60000000, switcher,
 					0x80ffffff & sel, sel, hover,
@@ -79,13 +79,13 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 	public void render(GuiGraphics g, Player player, List<? extends WheelAdaptor.Entry> list, WheelContext ctx) {
 		int n = list.size();
 		var region = getRegion(n, ctx.left() != null, ctx.right() != null);
-		renderWheel(g, region, list, ctx.sel(), ctx.hover());
 		var arc = ctx.keys().getArcColor(ctx);
+		renderWheel(g, region, list, ctx.sel(), ctx.hover(), arc);
 		renderSwitch(g, region, ctx, arc);
 		renderArc(g, region, ctx.sel(), ctx.hover(), arc);
 	}
 
-	protected void renderWheel(GuiGraphics g, WheelRegion region, List<? extends WheelAdaptor.Entry> list, int sel, int hover) {
+	protected void renderWheel(GuiGraphics g, WheelRegion region, List<? extends WheelAdaptor.Entry> list, int sel, int hover, ArcCode arc) {
 		int n = region.n();
 		var x0 = region.x0();
 		var y0 = region.y0();
@@ -103,8 +103,12 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 		for (int i = 0; i < n; i++) {
 			float ai = a0 + da * i;
 			int color;
-			if (hover == i) color = col.fanHoverBg();
-			else if (sel == i) color = col.fanSelBg();
+			if (hover == i) {
+				color = col.fanHoverBg();
+				if (arc != ArcCode.SELECT) {
+					color = (color & 0x00ffffff) | ((color >>> 25) << 24);
+				}
+			} else if (sel == i) color = col.fanSelBg();
 			else color = col.fanBg();
 			WheelOverlay.fillFan(g, x0, y0, ai, da, r0, r1, 0, 0, color & 0x00ffffff, color);
 		}
