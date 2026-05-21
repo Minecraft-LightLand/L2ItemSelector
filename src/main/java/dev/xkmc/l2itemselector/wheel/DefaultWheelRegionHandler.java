@@ -107,7 +107,6 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 			else color = col.fanBg();
 			WheelOverlay.fillFan(g, x0, y0, ai, da, r0, r1, 0, 0, color & 0x00ffffff, color);
 		}
-		g.flush();
 		// render separator
 		for (int i = 0; i < n; i++) {
 			float a = a0 + da * i + da / 2;
@@ -116,13 +115,11 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 			int outerColor = innerColor & 0x00ffffff;
 			WheelOverlay.drawSeparator(g, x0, y0, a, r1, r2, 0.005f, 0.0025f, innerColor, outerColor);
 		}
-		g.flush();
 		// render wheel content
 		for (int i = 0; i < n; i++) {
 			float ai = a0 + da * i;
 			list.get(i).render(g, x0, y0, ai, region.r0(), r, da, hover == i);
 		}
-		g.flush();
 	}
 
 	protected boolean renderSwitch(GuiGraphics g, WheelRegion region, @Nullable WheelAdaptor<?> left, @Nullable WheelAdaptor<?> right) {
@@ -152,7 +149,6 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 			} else WheelOverlay.drawSideGradient(g, false, sideWidth, side, side0);
 			right.renderIcon(g, x0, y0, false, sideWidth);
 		}
-		g.flush();
 		return canSwitch;
 	}
 
