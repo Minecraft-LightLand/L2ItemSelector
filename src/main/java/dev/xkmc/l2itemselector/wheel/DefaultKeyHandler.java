@@ -8,9 +8,6 @@ import net.minecraft.world.entity.player.Player;
 
 public abstract class DefaultKeyHandler implements WheelKeyHandler {
 
-	public static final DefaultKeyHandler DEF = new Fast();
-	public static final DefaultKeyHandler SWITCH = new Switcher();
-
 	@Override
 	public void handleClientKey(L2Keys k, Player player) {
 		switch (k) {
@@ -96,13 +93,15 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 
 	public static class Fast extends DefaultKeyHandler {
 
+		public static final WheelKeyHandler INS = new DefaultKeyHandler.Fast();
+
 		@Override
 		public boolean shouldOpen(boolean longPress) {
 			return true;
 		}
 
 		@Override
-		public boolean onReleaseWithWheel(WheelAdaptor wheel, boolean longPress) {
+		public boolean onReleaseWithWheel(WheelAdaptor wheel, Player player, boolean longPress) {
 			if (longPress) {
 				int index = getEffectiveSelect();
 				if (index >= 0) wheel.select(index);
@@ -112,7 +111,7 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 		}
 
 		@Override
-		public void onReleaseWithoutWheel(boolean longPress) {
+		public void onReleaseWithoutWheel(WheelAdaptor sel, Player player, boolean longPress) {
 
 		}
 
@@ -120,13 +119,15 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 
 	public static class Switcher extends DefaultKeyHandler {
 
+		public static final WheelKeyHandler INS = new DefaultKeyHandler.Switcher();
+
 		@Override
 		public boolean shouldOpen(boolean longPress) {
 			return longPress;
 		}
 
 		@Override
-		public boolean onReleaseWithWheel(WheelAdaptor wheel, boolean longPress) {
+		public boolean onReleaseWithWheel(WheelAdaptor wheel, Player player, boolean longPress) {
 			if (longPress) {
 				int index = getEffectiveSelect();
 				if (index >= 0) wheel.select(index);
@@ -136,8 +137,9 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 		}
 
 		@Override
-		public void onReleaseWithoutWheel(boolean longPress) {
-			// TODO
+		public void onReleaseWithoutWheel(WheelAdaptor wheel, Player player, boolean longPress) {
+			int index = wheel.getIndex(player);
+			if (index >= 0) wheel.select(index);
 		}
 
 	}

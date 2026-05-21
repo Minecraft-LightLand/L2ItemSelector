@@ -18,7 +18,7 @@ public class WheelOverlay implements LayeredDraw.Layer {
 		var player = Minecraft.getInstance().player;
 		if (player == null) return;
 		if (WheelHandler.wheel == null) return;
-		WheelHandler.wheel.render(g, player);
+		WheelHandler.wheel.renderWheel(g, player);
 	}
 
 
@@ -27,7 +27,7 @@ public class WheelOverlay implements LayeredDraw.Layer {
 		VertexConsumer vc = g.bufferSource().getBuffer(Shard.GUI_FAN);
 		float x1 = x0 + Mth.cos(ai) * dr;
 		float y1 = y0 + Mth.sin(ai) * dr;
-		int n = (int) Math.max(3, da / (Math.PI / 24));
+		int n = (int) Math.max(3, da / (Math.PI / 48));
 		for (int i = 0; i <= n; i++) {
 			float a = ai + da / 2 - da / n * i;
 			float x2 = x1 + Mth.cos(a) * r1;

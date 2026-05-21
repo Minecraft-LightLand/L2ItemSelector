@@ -23,15 +23,12 @@ public class WheelHandler {
 		boolean holding = L2Keys.WHEEL.map.isDown();
 		if (!holding) wheelPressTime = -1;
 		else if (!held) wheelPressTime = System.currentTimeMillis();
-		handleTickImpl(player, holding);
+		if (player == null || Minecraft.getInstance().screen != null) disableWheel(player);
+		else handleTickImpl(player, holding);
 		held = holding;
 	}
 
-	public static void handleTickImpl(@Nullable Player player, boolean holding) {
-		if (player == null || Minecraft.getInstance().screen != null) {
-			disableWheel(player);
-			return;
-		}
+	public static void handleTickImpl(Player player, boolean holding) {
 		long current = System.currentTimeMillis();
 		boolean longPress = current - wheelPressTime > LONG_PRESS_MS;
 		if (wheel != null) { // wheel present
@@ -43,7 +40,7 @@ public class WheelHandler {
 			if (wheel == null) { // wheel invalid
 				disableWheel(player);
 			} else if (held && !holding) { // stop holding
-				if (wheel.getInputHandler().onReleaseWithWheel(wheel, longPress))
+				if (wheel.getInputHandler().onReleaseWithWheel(wheel, player, longPress))
 					disableWheel(player);
 			}
 			return;
@@ -53,7 +50,7 @@ public class WheelHandler {
 			if (held) {
 				var sel = WheelAdaptor.get(player, wheelIndex);
 				if (sel != null) {
-					sel.getInputHandler().onReleaseWithoutWheel(longPress);
+					sel.getInputHandler().onReleaseWithoutWheel(sel, player, longPress);
 				}
 			}
 			return;
