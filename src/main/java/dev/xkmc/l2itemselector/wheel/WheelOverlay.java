@@ -40,35 +40,22 @@ public class WheelOverlay implements LayeredDraw.Layer {
 	}
 
 
+	public static void drawSideGradient(GuiGraphics g, boolean left, float width, int outerColor, int innerColor) {
+		if (left) fillGradient(g, 0, 0, width, g.guiHeight(), 0, outerColor, innerColor);
+		else fillGradient(g, g.guiWidth() - width, g.guiWidth(), width, g.guiHeight(), 0, innerColor, outerColor);
+	}
 
-	public static void drawSideGradient(GuiGraphics g, float x0, float y0, boolean left, float width, int outerColor, int innerColor) {
-		//TODO review
-		Matrix4f mat = g.pose().last().pose();
-		VertexConsumer vc = g.bufferSource().getBuffer(Shard.GUI_GRADIENT);
-		float xOuter = left ? 0 : 2 * x0;
-		float xInner = left ? width : 2 * x0 - width;
-		float screenH = g.guiHeight();
-		if (left) {
-			vc.addVertex(mat, xOuter, 0, 0).setColor(outerColor);
-			vc.addVertex(mat, xOuter, screenH, 0).setColor(outerColor);
-			vc.addVertex(mat, xInner, screenH, 0).setColor(innerColor);
-			vc.addVertex(mat, xOuter, 0, 0).setColor(outerColor);
-			vc.addVertex(mat, xInner, screenH, 0).setColor(innerColor);
-			vc.addVertex(mat, xInner, 0, 0).setColor(innerColor);
-		} else {
-			vc.addVertex(mat, xOuter, 0, 0).setColor(outerColor);
-			vc.addVertex(mat, xInner, 0, 0).setColor(innerColor);
-			vc.addVertex(mat, xInner, screenH, 0).setColor(innerColor);
-			vc.addVertex(mat, xOuter, 0, 0).setColor(outerColor);
-			vc.addVertex(mat, xInner, screenH, 0).setColor(innerColor);
-			vc.addVertex(mat, xOuter, screenH, 0).setColor(outerColor);
-		}
+	private static void fillGradient(GuiGraphics g, float x0, float y0, float x1, float y1, int z, int c0, int c1) {
+		Matrix4f matrix4f = g.pose().last().pose();
+		var vc = g.bufferSource().getBuffer(RenderType.gui());
+		vc.addVertex(matrix4f, x0, y0, z).setColor(c0);
+		vc.addVertex(matrix4f, x0, y1, z).setColor(c0);
+		vc.addVertex(matrix4f, x1, y1, z).setColor(c1);
+		vc.addVertex(matrix4f, x1, y0, z).setColor(c1);
 	}
 
 
-
 	public static void drawSeparator(GuiGraphics g, float x0, float y0, float a, float rInner, float rOuter, float innerHalfW, float outerHalfW, int innerColor, int outerColor) {
-		//TODO review
 		Matrix4f mat = g.pose().last().pose();
 		VertexConsumer vc = g.bufferSource().getBuffer(Shard.GUI_FAN);
 		int seg = 8;
@@ -103,14 +90,6 @@ public class WheelOverlay implements LayeredDraw.Layer {
 
 		public static final RenderType GUI_FAN = create("gui_fan",
 				DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLE_STRIP, 786432,
-				RenderType.CompositeState.builder()
-						.setShaderState(RENDERTYPE_GUI_SHADER)
-						.setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-						.setDepthTestState(LEQUAL_DEPTH_TEST)
-						.createCompositeState(false));
-
-		private static final RenderType GUI_GRADIENT = create("gui_gradient",
-				DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLES, 2048,
 				RenderType.CompositeState.builder()
 						.setShaderState(RENDERTYPE_GUI_SHADER)
 						.setTransparencyState(TRANSLUCENT_TRANSPARENCY)
