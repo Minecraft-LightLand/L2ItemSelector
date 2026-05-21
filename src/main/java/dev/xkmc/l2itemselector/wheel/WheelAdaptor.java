@@ -13,11 +13,16 @@ public interface WheelAdaptor<T extends WheelAdaptor.Entry> extends InputHandler
 
 	@Nullable
 	static WheelAdaptor<?> get(@Nullable Player player, int wheelIndex) {
+		return get(player, wheelIndex, true);
+	}
+
+	@Nullable
+	static WheelAdaptor<?> get(@Nullable Player player, int wheelIndex, boolean main) {
 		if (player == null) return null;
 		var sel = SelectionRegistry.getClientActiveListener(player);
 		if (sel.isEmpty()) return null;
 		if (!(sel.get() instanceof Provider pvd)) return null;
-		return pvd.get(player, wheelIndex).orElse(null);
+		return pvd.get(player, wheelIndex, main).orElse(null);
 	}
 
 	default WheelKeyHandler getInputHandler() {
@@ -62,8 +67,8 @@ public interface WheelAdaptor<T extends WheelAdaptor.Entry> extends InputHandler
 	default WheelContext getContext(Player player, int n) {
 		int sel = getIndex(player);
 		var region = getRegion();
-		var left = WheelAdaptor.get(player, WheelHandler.wheelIndex - 1);
-		var right = WheelAdaptor.get(player, WheelHandler.wheelIndex + 1);
+		var left = WheelAdaptor.get(player, WheelHandler.wheelIndex - 1, false);
+		var right = WheelAdaptor.get(player, WheelHandler.wheelIndex + 1, false);
 		if (left != null && left.equals(this)) left = null;
 		if (right != null && right.equals(this)) right = null;
 		var keys = getInputHandler();
@@ -93,7 +98,7 @@ public interface WheelAdaptor<T extends WheelAdaptor.Entry> extends InputHandler
 
 	interface Provider {
 
-		Optional<WheelAdaptor<?>> get(@Nullable Player player, int wheelIndex);
+		Optional<WheelAdaptor<?>> get(@Nullable Player player, int wheelIndex, boolean main);
 
 	}
 
