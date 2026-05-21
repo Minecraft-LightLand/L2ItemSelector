@@ -74,12 +74,14 @@ public interface WheelAdaptor<T extends WheelAdaptor.Entry> extends InputHandler
 		var right = WheelAdaptor.get(player, WheelHandler.wheelIndex + 1);
 		if (left != null && left.equals(this)) left = null;
 		if (right != null && right.equals(this)) right = null;
-		renderImpl(g, player, list, sel, hover, left != null, right != null);
+		renderImpl(g, player, list, sel, hover, left, right);
 	}
 
-	default void renderImpl(GuiGraphics g, Player player, List<T> list, int sel, int hover, boolean hasLeft, boolean hasRight) {
-		getRegion().render(g, player, list, getInputHandler(), sel, hover, hasLeft, hasRight);
+	default void renderImpl(GuiGraphics g, Player player, List<T> list, int sel, int hover, @Nullable WheelAdaptor<?> left, @Nullable WheelAdaptor<?> right) {
+		getRegion().render(g, player, list, getInputHandler(), sel, hover, left, right);
 	}
+
+	void renderIcon(GuiGraphics g, int x0, int y0, boolean left, float sideWidth);
 
 	interface Provider {
 

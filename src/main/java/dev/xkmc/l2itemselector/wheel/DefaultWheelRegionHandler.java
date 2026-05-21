@@ -3,6 +3,7 @@ package dev.xkmc.l2itemselector.wheel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -42,11 +43,11 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 	}
 
 	@Override
-	public void render(GuiGraphics g, Player player, List<? extends WheelAdaptor.Entry> list, WheelKeyHandler keys, int sel, int hover, boolean hasLeft, boolean hasRight) {
+	public void render(GuiGraphics g, Player player, List<? extends WheelAdaptor.Entry> list, WheelKeyHandler keys, int sel, int hover, @Nullable WheelAdaptor<?> left, @Nullable WheelAdaptor<?> right) {
 		int n = list.size();
 		var region = getRegion(n);
 		renderWheel(g, region, list, sel, hover);
-		var canSwitch = renderSwitch(g, region, hasLeft, hasRight);
+		var canSwitch = renderSwitch(g, region, left, right);
 		renderArc(g, region, sel, hover, keys.getArcColor(hover, canSwitch));
 	}
 
@@ -91,34 +92,30 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 		g.flush();
 	}
 
-	protected boolean renderSwitch(GuiGraphics g, WheelRegion region, boolean hasLeft, boolean hasRight) {
+	protected boolean renderSwitch(GuiGraphics g, WheelRegion region, @Nullable WheelAdaptor<?> left, @Nullable WheelAdaptor<?> right) {
 
 		var x0 = region.x0();
 		var y0 = region.y0();
 		var r = region.r();
 
 		// render wheel switch
-		float switchR = r * 1.25f;
-		float sideWidth = x0 - switchR;
-		if (hasLeft) {
-			WheelOverlay.drawSideGradient(g, x0, y0, true, sideWidth, 0x60000000, 0x00000000);
-			g.flush();
-		}
-		if (hasRight) {
-			WheelOverlay.drawSideGradient(g, x0, y0, false, sideWidth, 0x60000000, 0x00000000);
-			g.flush();
-		}
-
-		// render switch hover
+		float sr = r * 1.25f;
+		float sideWidth = x0 - sr;
+		boolean outOfWheel = region.distSqr() > sr * sr;
 		boolean canSwitch = false;
-		if (region.distSqr() > switchR * switchR) {
-			if (region.mx() < 0 && hasLeft) {
+		if (left != null) {
+			if (region.mx() < 0 && outOfWheel) {
 				WheelOverlay.drawSideGradient(g, x0, y0, true, sideWidth, 0x800088ff, 0x000088ff);
 				canSwitch = true;
-			} else if (region.mx() >= 0 && hasRight) {
+			} else WheelOverlay.drawSideGradient(g, x0, y0, true, sideWidth, 0x60000000, 0x00000000);
+			left.renderIcon(g, x0, y0, true, sideWidth);
+		}
+		if (right != null) {
+			if (region.mx() >= 0 && outOfWheel) {
 				WheelOverlay.drawSideGradient(g, x0, y0, false, sideWidth, 0x800088ff, 0x000088ff);
 				canSwitch = true;
-			}
+			} else WheelOverlay.drawSideGradient(g, x0, y0, false, sideWidth, 0x60000000, 0x00000000);
+			right.renderIcon(g, x0, y0, false, sideWidth);
 		}
 		g.flush();
 		return canSwitch;
@@ -138,7 +135,7 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 				? a0 + da * WheelHandler.keyboardIndex
 				: (float) Math.atan2(region.my(), region.mx());
 
-		int arcColor = switch (arc){
+		int arcColor = switch (arc) {
 			case SELECT -> 0xfff4852b;
 			case SWITCH -> 0x800088ff;
 			case CLOSE -> 0x80ff4444;

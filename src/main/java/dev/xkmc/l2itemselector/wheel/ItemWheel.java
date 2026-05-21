@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -12,8 +13,13 @@ public interface ItemWheel<T extends WheelAdaptor.Entry> extends WheelAdaptor<T>
 	ItemStack getItem(List<T> list, int index);
 
 	@Override
-	default void renderImpl(GuiGraphics g, Player player, List<T> list, int sel, int hover, boolean hasLeft, boolean hasRight) {
-		WheelAdaptor.super.renderImpl(g, player, list, sel, hover, hasLeft, hasRight);
+	default void renderIcon(GuiGraphics g, int x0, int y0, boolean left, float sideWidth) {
+		//TODO render icon
+	}
+
+	@Override
+	default void renderImpl(GuiGraphics g, Player player, List<T> list, int sel, int hover, @Nullable WheelAdaptor<?> left, @Nullable WheelAdaptor<?> right) {
+		WheelAdaptor.super.renderImpl(g, player, list, sel, hover, left, right);
 		int index = hover >= 0 ? hover : sel;
 		ItemStack stack = getItem(list, index);
 		int x0 = g.guiWidth() / 2, y0 = g.guiHeight() / 2;
@@ -25,7 +31,6 @@ public interface ItemWheel<T extends WheelAdaptor.Entry> extends WheelAdaptor<T>
 		g.renderItem(stack, -8, -16);
 		g.renderItemDecorations(Minecraft.getInstance().font, stack, -8, -16);
 		g.pose().popPose();
-		//TODO review
 		var text = stack.getHoverName();
 		var font = Minecraft.getInstance().font;
 		int y = (int) (y0 + s * 3);
