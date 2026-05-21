@@ -80,8 +80,9 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 		int n = list.size();
 		var region = getRegion(n, ctx.left() != null, ctx.right() != null);
 		renderWheel(g, region, list, ctx.sel(), ctx.hover());
-		renderSwitch(g, region, ctx);
-		renderArc(g, region, ctx.sel(), ctx.hover(), ctx.keys().getArcColor(ctx));
+		var arc = ctx.keys().getArcColor(ctx);
+		renderSwitch(g, region, ctx, arc);
+		renderArc(g, region, ctx.sel(), ctx.hover(), arc);
 	}
 
 	protected void renderWheel(GuiGraphics g, WheelRegion region, List<? extends WheelAdaptor.Entry> list, int sel, int hover) {
@@ -122,7 +123,7 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 		}
 	}
 
-	protected void renderSwitch(GuiGraphics g, WheelRegion region, WheelContext ctx) {
+	protected void renderSwitch(GuiGraphics g, WheelRegion region, WheelContext ctx, ArcCode arc) {
 		var code = ctx.code();
 		var x0 = region.x0();
 		var y0 = region.y0();
@@ -131,9 +132,11 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 
 		// render wheel switch
 		float sideWidth = x0 - sr;
-
 		int side = col.switcher(), side0 = side & 0x00ffffff;
 		int hover = col.switchHover(), hover0 = hover & 0x00ffffff;
+		if (arc != ArcCode.SWITCH) {
+			hover = hover0 | ((hover >>> 25) << 24);
+		}
 		if (ctx.left() != null) {
 			if (code.switcher() == -1) {
 				WheelOverlay.drawSideGradient(g, true, sideWidth, hover, hover0);
