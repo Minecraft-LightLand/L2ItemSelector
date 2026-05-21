@@ -18,7 +18,9 @@ public class WheelOverlay implements LayeredDraw.Layer {
 		var player = Minecraft.getInstance().player;
 		if (player == null) return;
 		if (WheelHandler.wheel == null) return;
-		WheelHandler.wheel.renderWheel(g, player);
+		var next = WheelAdaptor.get(player, WheelHandler.wheelIndex);
+		if (next == null) return;
+		next.renderWheel(g, player);
 	}
 
 
