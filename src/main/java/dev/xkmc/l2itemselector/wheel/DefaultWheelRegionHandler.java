@@ -96,6 +96,8 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 		var r = region.r();
 		var r2 = region.r2();
 		var col = getPalette();
+		if (arc == ArcCode.SWITCH || arc == ArcCode.CLOSE)
+			hover = -1;
 
 		// render background
 		WheelOverlay.fillFan(g, x0, y0, a0, (float) (Math.PI * 2), r2, 0, 0, 0, col.wheelBg0(), col.wheelBg1());
@@ -133,25 +135,27 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 		var y0 = region.y0();
 		float sr = region.r2();
 		var col = getPalette();
+		int switcher = code.switcher();
 
 		// render wheel switch
 		float sideWidth = x0 - sr;
 		int side = col.switcher(), side0 = side & 0x00ffffff;
 		int hover = col.switchHover(), hover0 = hover & 0x00ffffff;
+		if (arc == ArcCode.CLOSE) switcher = 0;
 		if (arc != ArcCode.SWITCH) {
 			hover = hover0 | ((hover >>> 25) << 24);
 		}
 		if (ctx.left() != null) {
-			if (code.switcher() == -1) {
+			if (switcher == -1) {
 				WheelOverlay.drawSideGradient(g, true, sideWidth, hover, hover0);
 			} else WheelOverlay.drawSideGradient(g, true, sideWidth, side, side0);
-			ctx.left().renderIcon(g, x0, y0, true, sideWidth, code.switcher() == -1);
+			ctx.left().renderIcon(g, x0, y0, true, sideWidth, switcher == -1);
 		}
 		if (ctx.right() != null) {
-			if (code.switcher() == 1) {
+			if (switcher == 1) {
 				WheelOverlay.drawSideGradient(g, false, sideWidth, hover, hover0);
 			} else WheelOverlay.drawSideGradient(g, false, sideWidth, side, side0);
-			ctx.right().renderIcon(g, x0, y0, false, sideWidth, code.switcher() == 1);
+			ctx.right().renderIcon(g, x0, y0, false, sideWidth, switcher == 1);
 		}
 	}
 
