@@ -94,7 +94,7 @@ public interface WheelAdaptor<T extends WheelAdaptor.Entry> extends InputHandler
 		ctx.region().render(g, player, list, ctx);
 	}
 
-	void renderIcon(GuiGraphics g, int x0, int y0, boolean left, float sideWidth);
+	void renderIcon(GuiGraphics g, int x0, int y0, boolean left, float sideWidth, boolean hover);
 
 	interface Provider {
 

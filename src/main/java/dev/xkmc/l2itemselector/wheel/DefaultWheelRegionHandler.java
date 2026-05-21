@@ -141,13 +141,13 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 			if (code.switcher() == -1) {
 				WheelOverlay.drawSideGradient(g, true, sideWidth, hover, hover0);
 			} else WheelOverlay.drawSideGradient(g, true, sideWidth, side, side0);
-			ctx.left().renderIcon(g, x0, y0, true, sideWidth);
+			ctx.left().renderIcon(g, x0, y0, true, sideWidth, code.switcher() == -1);
 		}
 		if (ctx.right() != null) {
 			if (code.switcher() == 1) {
 				WheelOverlay.drawSideGradient(g, false, sideWidth, hover, hover0);
 			} else WheelOverlay.drawSideGradient(g, false, sideWidth, side, side0);
-			ctx.right().renderIcon(g, x0, y0, false, sideWidth);
+			ctx.right().renderIcon(g, x0, y0, false, sideWidth, code.switcher() == 1);
 		}
 	}
 

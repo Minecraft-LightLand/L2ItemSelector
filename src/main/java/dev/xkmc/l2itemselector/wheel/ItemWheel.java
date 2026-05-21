@@ -12,7 +12,7 @@ public interface ItemWheel<T extends WheelAdaptor.Entry> extends WheelAdaptor<T>
 	ItemStack getItem(List<T> list, int index);
 
 	@Override
-	default void renderIcon(GuiGraphics g, int x0, int y0, boolean left, float sideWidth) {
+	default void renderIcon(GuiGraphics g, int x0, int y0, boolean left, float sideWidth, boolean hover) {
 		//TODO render icon
 	}
 
