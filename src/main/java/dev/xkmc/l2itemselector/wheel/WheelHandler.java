@@ -12,10 +12,9 @@ public class WheelHandler {
 	private static final long LONG_PRESS_MS = 200;
 
 	private static long wheelPressTime = -1;
-	private static boolean held = false;
 	private static boolean suppress = false;
 	private static boolean heldWithWheel = false;
-
+	static boolean held = false;
 	public static int wheelIndex = 0;
 	public static WheelAdaptor<?> wheel = null;
 

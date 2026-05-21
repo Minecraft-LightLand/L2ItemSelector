@@ -107,7 +107,15 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 	}
 
 	public enum ActionCode {
-		SWITCH, SELECT, CLOSE, SEL_CLOSE, NONE
+		SWITCH, SELECT, CLOSE, SEL_CLOSE, NONE;
+
+		public ActionCode closeIf(boolean close) {
+			if (close) {
+				if (this == SELECT) return SEL_CLOSE;
+				if (this == NONE) return CLOSE;
+			}
+			return this;
+		}
 	}
 
 	public static class Fast extends DefaultKeyHandler {
@@ -139,8 +147,7 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 			return switch (input) {
 				case RELEASE -> ctx.hover() >= 0 ? ActionCode.SELECT : ActionCode.CLOSE;
 				case LEFT -> ctx.code().switcher() != 0 ? ActionCode.SWITCH :
-						ctx.code().sel() >= 0 ? ActionCode.SELECT :
-						ActionCode.NONE;
+						(ctx.code().sel() >= 0 ? ActionCode.SELECT : ActionCode.NONE).closeIf(!WheelHandler.held);
 				case RIGHT -> ctx.code().sel() >= 0 && !ctx.code().outside() ? ActionCode.SEL_CLOSE : ActionCode.CLOSE;
 			};
 		}
@@ -176,8 +183,7 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 		public ActionCode getAction(WheelContext ctx, ActionInput input) {
 			return switch (input) {
 				case RELEASE -> ctx.hover() >= 0 ? ActionCode.SELECT : ActionCode.CLOSE;
-				case LEFT -> ctx.code().sel() >= 0 ? ActionCode.SELECT :
-						ActionCode.NONE;
+				case LEFT -> ctx.code().sel() >= 0 ? ActionCode.SELECT : ActionCode.NONE;
 				case RIGHT -> ctx.code().switcher() != 0 ? ActionCode.SWITCH : ActionCode.CLOSE;
 			};
 		}
