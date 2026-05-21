@@ -17,7 +17,8 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 	) {
 
 		RegionCode getHover() {
-			int sel = distSqr < r1 * r1 ? -1 : ma;
+			var dead = r * 0.1f;
+			int sel = distSqr < dead * dead ? -1 : ma;
 			boolean out = distSqr > r2 * r2;
 			int swi = out ? mx < 0 ? hasLeft ? -1 : 0 : hasRight ? 1 : 0 : 0;
 			return new RegionCode(sel, out, swi);
