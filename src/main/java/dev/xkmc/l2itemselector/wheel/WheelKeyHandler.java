@@ -24,6 +24,6 @@ public interface WheelKeyHandler {
 
 	void onReleaseWithoutWheel(WheelAdaptor<?> sel, Player player, boolean longPress);
 
-	ArcCode getArcColor(WheelContext hover, boolean canSwitch);
+	ArcCode getArcColor(WheelContext hover);
 
 }

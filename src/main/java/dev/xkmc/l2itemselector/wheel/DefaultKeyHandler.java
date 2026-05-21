@@ -5,7 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 import org.lwjgl.glfw.GLFW;
 
-import static dev.xkmc.l2itemselector.wheel.ArcCode.CLOSE;
+import static dev.xkmc.l2itemselector.wheel.ArcCode.*;
 
 public abstract class DefaultKeyHandler implements WheelKeyHandler {
 
@@ -56,9 +56,51 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 		return code.sel();
 	}
 
-	public ActionCode getAction(WheelContext ctx, boolean canSwitch, ActionInput input) {
-		return ActionCode.NONE;
+	protected void execute(WheelAdaptor<?> wheel, Player player, ActionCode action, RegionCode code) {
+		switch (action) {
+			case SWITCH -> {
+				WheelHandler.wheelIndex += code.switcher();
+				WheelHandler.keyboardIndex = -1;
+			}
+			case SEL_CLOSE -> {
+				wheel.select(code.sel());
+				WheelHandler.disableWheel(player);
+			}
+			case SELECT -> wheel.select(code.sel());
+			case CLOSE -> WheelHandler.disableWheel(player);
+		}
 	}
+
+	@Override
+	public void leftClick(WheelAdaptor<?> wheel, Player player) {
+		var ctx = wheel.getContext(player, wheel.getWheelSize());
+		execute(wheel, player, getAction(ctx, ActionInput.LEFT), ctx.code());
+	}
+
+	@Override
+	public void rightClick(WheelAdaptor<?> wheel, Player player) {
+		var ctx = wheel.getContext(player, wheel.getWheelSize());
+		execute(wheel, player, getAction(ctx, ActionInput.RIGHT), ctx.code());
+	}
+
+	@Override
+	public ArcCode getArcColor(WheelContext ctx) {
+		boolean rightHeld = GLFW.glfwGetMouseButton(
+				Minecraft.getInstance().getWindow().getWindow(),
+				GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
+		boolean leftHeld = GLFW.glfwGetMouseButton(
+				Minecraft.getInstance().getWindow().getWindow(),
+				GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
+		var action = getAction(ctx, leftHeld ? ActionInput.LEFT : rightHeld ? ActionInput.RIGHT : ActionInput.RELEASE);
+		return switch (action) {
+			case SWITCH -> SWITCH;
+			case SELECT, SEL_CLOSE -> leftHeld || rightHeld ? SELECT : NONE;
+			case CLOSE -> CLOSE;
+			default -> NONE;
+		};
+	}
+
+	public abstract ActionCode getAction(WheelContext ctx, ActionInput input);
 
 	public enum ActionInput {
 		RELEASE, LEFT, RIGHT
@@ -93,37 +135,14 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 		}
 
 		@Override
-		public void leftClick(WheelAdaptor<?> wheel, Player player) {
-			var code = wheel.getMouseSelect(player);
-			if (code.switcher() != 0) {
-				WheelHandler.wheelIndex += code.switcher();
-				WheelHandler.keyboardIndex = -1;
-			} else if (code.sel() >= 0) {
-				wheel.select(code.sel());
-			}
-		}
-
-		@Override
-		public void rightClick(WheelAdaptor<?> wheel, Player player) {
-			var code = wheel.getMouseSelect(player);
-			if (code.sel() >= 0 && !code.outside()) {
-				wheel.select(code.sel());
-			}
-			WheelHandler.disableWheel(player);
-		}
-
-		@Override
-		public ArcCode getArcColor(WheelContext ctx, boolean canSwitch) {
-			boolean rightHeld = GLFW.glfwGetMouseButton(
-					Minecraft.getInstance().getWindow().getWindow(),
-					GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
-			boolean leftHeld = GLFW.glfwGetMouseButton(
-					Minecraft.getInstance().getWindow().getWindow(),
-					GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
-			if (leftHeld && canSwitch) return ArcCode.SWITCH;
-			if ((rightHeld && !ctx.code().outside() || leftHeld) && ctx.code().sel() >= 0) return ArcCode.SELECT;
-			if (ctx.hover() < 0 || rightHeld) return CLOSE;
-			else return ArcCode.NONE;
+		public ActionCode getAction(WheelContext ctx, ActionInput input) {
+			return switch (input) {
+				case RELEASE -> ctx.hover() >= 0 ? ActionCode.SELECT : ActionCode.CLOSE;
+				case LEFT -> ctx.code().switcher() != 0 ? ActionCode.SWITCH :
+						ctx.code().sel() >= 0 ? ActionCode.SELECT :
+						ActionCode.NONE;
+				case RIGHT -> ctx.code().sel() >= 0 && !ctx.code().outside() ? ActionCode.SEL_CLOSE : ActionCode.CLOSE;
+			};
 		}
 
 	}
@@ -154,37 +173,14 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 		}
 
 		@Override
-		public void leftClick(WheelAdaptor<?> wheel, Player player) {
-			int index = wheel.getMouseSelect(player).sel();
-			if (index >= 0) {
-				wheel.select(index);
-			}
+		public ActionCode getAction(WheelContext ctx, ActionInput input) {
+			return switch (input) {
+				case RELEASE -> ctx.hover() >= 0 ? ActionCode.SELECT : ActionCode.CLOSE;
+				case LEFT -> ctx.code().sel() >= 0 ? ActionCode.SELECT :
+						ActionCode.NONE;
+				case RIGHT -> ctx.code().switcher() != 0 ? ActionCode.SWITCH : ActionCode.CLOSE;
+			};
 		}
-
-		@Override
-		public void rightClick(WheelAdaptor<?> wheel, Player player) {
-			var code = wheel.getMouseSelect(player);
-			if (code.switcher() != 0) {
-				WheelHandler.wheelIndex += code.switcher();
-				WheelHandler.keyboardIndex = -1;
-			} else WheelHandler.disableWheel(player);
-		}
-
-		@Override
-		public ArcCode getArcColor(WheelContext ctx, boolean canSwitch) {
-			int hover = ctx.hover();
-			boolean rightHeld = GLFW.glfwGetMouseButton(
-					Minecraft.getInstance().getWindow().getWindow(),
-					GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
-			boolean leftHeld = GLFW.glfwGetMouseButton(
-					Minecraft.getInstance().getWindow().getWindow(),
-					GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
-			if (leftHeld && hover >= 0) return ArcCode.SELECT;
-			else if (rightHeld && canSwitch) return ArcCode.SWITCH;
-			else if (hover < 0 || rightHeld) return CLOSE;
-			else return ArcCode.NONE;
-		}
-
 
 	}
 

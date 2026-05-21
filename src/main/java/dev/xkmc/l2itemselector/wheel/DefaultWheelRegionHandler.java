@@ -3,7 +3,6 @@ package dev.xkmc.l2itemselector.wheel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -80,8 +79,8 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 		int n = list.size();
 		var region = getRegion(n, ctx.left() != null, ctx.right() != null);
 		renderWheel(g, region, list, ctx.sel(), ctx.hover());
-		var canSwitch = renderSwitch(g, region, ctx.left(), ctx.right());
-		renderArc(g, region, ctx.sel(), ctx.hover(), ctx.keys().getArcColor(ctx, canSwitch));
+		renderSwitch(g, region, ctx);
+		renderArc(g, region, ctx.sel(), ctx.hover(), ctx.keys().getArcColor(ctx));
 	}
 
 	protected void renderWheel(GuiGraphics g, WheelRegion region, List<? extends WheelAdaptor.Entry> list, int sel, int hover) {
@@ -122,8 +121,8 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 		}
 	}
 
-	protected boolean renderSwitch(GuiGraphics g, WheelRegion region, @Nullable WheelAdaptor<?> left, @Nullable WheelAdaptor<?> right) {
-
+	protected void renderSwitch(GuiGraphics g, WheelRegion region, WheelContext ctx) {
+		var code = ctx.code();
 		var x0 = region.x0();
 		var y0 = region.y0();
 		float sr = region.r2();
@@ -131,25 +130,21 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 
 		// render wheel switch
 		float sideWidth = x0 - sr;
-		boolean outOfWheel = region.distSqr() > sr * sr;
-		boolean canSwitch = false;
+
 		int side = col.switcher(), side0 = side & 0x00ffffff;
 		int hover = col.switchHover(), hover0 = hover & 0x00ffffff;
-		if (left != null) {
-			if (region.mx() < 0 && outOfWheel) {
+		if (ctx.left() != null) {
+			if (code.switcher() == -1) {
 				WheelOverlay.drawSideGradient(g, true, sideWidth, hover, hover0);
-				canSwitch = true;
 			} else WheelOverlay.drawSideGradient(g, true, sideWidth, side, side0);
-			left.renderIcon(g, x0, y0, true, sideWidth);
+			ctx.left().renderIcon(g, x0, y0, true, sideWidth);
 		}
-		if (right != null) {
-			if (region.mx() >= 0 && outOfWheel) {
+		if (ctx.right() != null) {
+			if (code.switcher() == 1) {
 				WheelOverlay.drawSideGradient(g, false, sideWidth, hover, hover0);
-				canSwitch = true;
 			} else WheelOverlay.drawSideGradient(g, false, sideWidth, side, side0);
-			right.renderIcon(g, x0, y0, false, sideWidth);
+			ctx.right().renderIcon(g, x0, y0, false, sideWidth);
 		}
-		return canSwitch;
 	}
 
 	protected void renderArc(GuiGraphics g, WheelRegion region, int sel, int hover, ArcCode arc) {
