@@ -132,5 +132,7 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 			if (global >= start && global < end) return global - start;
 			return -1;
 		}
+
 	}
+
 }

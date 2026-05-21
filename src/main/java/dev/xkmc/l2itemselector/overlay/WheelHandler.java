@@ -9,64 +9,64 @@ import org.lwjgl.glfw.GLFW;
 
 public class WheelHandler {
 
-	public static WheelAdaptor wheel = null;
-	public static int keyboardIndex = -1;
-	public static int wheelIndex = 0;
-	private static boolean suppress = false;
-	public static long wheelPressTime = -1;
 	private static final long LONG_PRESS_MS = 200;
 
+	private static long wheelPressTime = -1;
+	private static boolean held = false;
+
+	public static int wheelIndex = 0;
+	public static WheelAdaptor wheel = null;
+
+	public static int keyboardIndex = -1; //TODO move to somewhere else
+
 	public static void handleTick(@Nullable Player player) {
+		boolean holding = L2Keys.WHEEL.map.isDown();
+		if (!holding) wheelPressTime = -1;
+		else if (!held) wheelPressTime = System.currentTimeMillis();
+		handleTickImpl(player, holding);
+		held = holding;
+	}
+
+	public static void handleTickImpl(@Nullable Player player, boolean holding) {
 		if (player == null || Minecraft.getInstance().screen != null) {
-			wheelPressTime = -1;
 			disableWheel(player);
 			return;
 		}
-		boolean held = L2Keys.WHEEL.map.isDown();
-		if (wheel != null) {
-			wheel = WheelAdaptor.get(player, wheelIndex);
-			if (wheel == null) {
-				disableWheel(player);
-				return;
+		long current = System.currentTimeMillis();
+		boolean longPress = current - wheelPressTime > LONG_PRESS_MS;
+		if (wheel != null) { // wheel present
+			var next = WheelAdaptor.get(player, wheelIndex);
+			if (next == null || !next.equals(wheel)) {
+				keyboardIndex = -1;
 			}
-			if (!held) {
-				int index = getEffectiveSelect();
-				if (index >= 0) {
-					wheel.onRelease(index);
-				}
+			wheel = next;
+			if (wheel == null) { // wheel invalid
 				disableWheel(player);
-				return;
+			} else if (held && !holding) { // stop holding
+				if (wheel.getInputHandler().onReleaseWithWheel(wheel, longPress))
+					disableWheel(player);
 			}
 			return;
 		}
-		if (held) {
-			if (suppress) return;
-			if (wheelPressTime < 0) {
-				wheelPressTime = System.currentTimeMillis();
-			}
-			if (System.currentTimeMillis() - wheelPressTime > LONG_PRESS_MS) {
-				var sel = WheelAdaptor.get(player, wheelIndex);
-				if (sel != null && sel.getWheelContent().size() > 1) {
-					wheel = sel;
-					keyboardIndex = -1;
-					Minecraft.getInstance().mouseHandler.releaseMouse();
-				}
-			}
-		} else {
-			if (wheelPressTime >= 0) {
+		// wheel not present
+		if (!holding) {
+			if (held) {
 				var sel = WheelAdaptor.get(player, wheelIndex);
 				if (sel != null) {
-					sel.shortPress(player);
+					sel.getInputHandler().onReleaseWithoutWheel(longPress);
 				}
 			}
-			wheelPressTime = -1;
-			disableWheel(player);
+			return;
 		}
+		// open wheel
+		var sel = WheelAdaptor.get(player, wheelIndex);
+		if (sel == null || sel.getWheelContent().size() <= 1 || !sel.getInputHandler().shouldOpen(longPress)) return;
+		wheel = sel;
+		keyboardIndex = -1;
+		Minecraft.getInstance().mouseHandler.releaseMouse();
 	}
 
-	public static void closeWheel(@Nullable Player player) {
-		suppress = true;
-		wheelPressTime = -1;
+	public static void disableWheel(@Nullable Player player) {
 		keyboardIndex = -1;
 		wheelIndex = 0;
 		if (wheel == null) return;
@@ -74,69 +74,24 @@ public class WheelHandler {
 			Minecraft.getInstance().mouseHandler.grabMouse();
 		}
 		wheel = null;
-	}
-
-	private static void disableWheel(@Nullable Player player) {
-		suppress = false;
-		wheelPressTime = -1;
-		keyboardIndex = -1;
-		wheelIndex = 0;
-		if (wheel == null) return;
-		if (player != null && Minecraft.getInstance().screen == null) {
-			Minecraft.getInstance().mouseHandler.grabMouse();
-		}
-		wheel = null;
-	}
-
-	public static int getSel() {
-		var player = Minecraft.getInstance().player;
-		if (player == null) return -1;
-		if (WheelHandler.wheel == null) return -1;
-		return WheelHandler.wheel.getMouseSelect(player);
-	}
-
-	public static int getEffectiveSelect() {
-		int mouse = getSel();
-		if (mouse >= 0) return mouse;
-		if (keyboardIndex >= 0) return keyboardIndex;
-		return -1;
 	}
 
 	public static boolean handleClick(InputEvent.MouseButton.Pre event) {
 		if (wheel == null) return false;
 		var player = Minecraft.getInstance().player;
-		if (player != null) {
-			if (event.getButton() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
-				if (event.getAction() == GLFW.GLFW_RELEASE) {
-					int index = getEffectiveSelect();
-					if (index >= 0) {
-						wheel.select(index);
-					}
-				}
-				event.setCanceled(true);
-				return true;
-			} else if (event.getButton() == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
-				if (event.getAction() == GLFW.GLFW_RELEASE) {
-					var win = Minecraft.getInstance().getWindow();
-					var mh = Minecraft.getInstance().mouseHandler;
-					float mx = (float) mh.xpos() * win.getGuiScaledWidth() / win.getScreenWidth() - win.getGuiScaledWidth() / 2f;
-					float my = (float) mh.ypos() * win.getGuiScaledHeight() / win.getScreenHeight() - win.getGuiScaledHeight() / 2f;
-					float r = Math.min(win.getGuiScaledWidth() / 2f, win.getGuiScaledHeight() / 2f) / 1.5f * 1.25f;
-					if (mx * mx + my * my <= r * r) {
-						closeWheel(player);
-					} else {
-						int target = mx < 0 ? wheelIndex - 1 : wheelIndex + 1;
-						if (WheelAdaptor.get(player, target) != null) {
-							wheelIndex = target;
-							keyboardIndex = -1;
-						} else {
-							closeWheel(player);
-						}
-					}
-				}
-				event.setCanceled(true);
-				return true;
+		if (player == null) return false;
+		if (event.getButton() == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+			if (event.getAction() == GLFW.GLFW_RELEASE) {
+				wheel.getInputHandler().leftClick(wheel, player);
 			}
+			event.setCanceled(true);
+			return true;
+		} else if (event.getButton() == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
+			if (event.getAction() == GLFW.GLFW_RELEASE) {
+				wheel.getInputHandler().rightClick(wheel, player);
+			}
+			event.setCanceled(true);
+			return true;
 		}
 		return false;
 	}

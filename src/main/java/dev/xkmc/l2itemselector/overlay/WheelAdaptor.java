@@ -1,7 +1,10 @@
 package dev.xkmc.l2itemselector.overlay;
 
-import dev.xkmc.l2itemselector.overlay.WheelAdaptor.ClientHandler;
+import dev.xkmc.l2itemselector.init.data.L2Keys;
 import dev.xkmc.l2itemselector.select.SelectionRegistry;
+import dev.xkmc.l2itemselector.wheel.DefaultKeyHandler;
+import dev.xkmc.l2itemselector.wheel.InputHandler;
+import dev.xkmc.l2itemselector.wheel.WheelKeyHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
@@ -12,7 +15,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.List;
 import java.util.Optional;
 
-public interface WheelAdaptor {
+public interface WheelAdaptor extends InputHandler {
 
 	@Nullable
 	static WheelAdaptor get(@Nullable Player player, int wheelIndex) {
@@ -21,6 +24,25 @@ public interface WheelAdaptor {
 		if (sel.isEmpty()) return null;
 		if (!(sel.get() instanceof Provider pvd)) return null;
 		return pvd.get(player, wheelIndex).orElse(null);
+	}
+
+	default WheelKeyHandler getInputHandler() {
+		return DefaultKeyHandler.SWITCH;
+	}
+
+	@Override
+	default boolean scrollBypassShift() {
+		return true;
+	}
+
+	@Override
+	default void handleClientKey(L2Keys k, Player player) {
+		getInputHandler().handleClientKey(k, player);
+	}
+
+	@Override
+	default boolean handleClientScroll(int diff, Player player) {
+		return getInputHandler().handleClientScroll(diff, player);
 	}
 
 	List<Entry> getWheelContent();
@@ -32,13 +54,6 @@ public interface WheelAdaptor {
 	int getIndex(Player player);
 
 	void select(int index);
-
-	default void onRelease(int index) {
-		select(index);
-	}
-
-	default void shortPress(Player player) {
-	}
 
 	default int getMouseSelect(Player player) {
 		int n = getWheelSize();
@@ -53,6 +68,7 @@ public interface WheelAdaptor {
 	}
 
 	default int render(GuiGraphics g, Player player) {
+		//TODO rendering
 		var list = WheelHandler.wheel.getWheelContent();
 		int n = list.size();
 		if (n <= 1) return -1;
