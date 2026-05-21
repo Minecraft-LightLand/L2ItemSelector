@@ -1,4 +1,4 @@
-package dev.xkmc.l2itemselector.overlay;
+package dev.xkmc.l2itemselector.wheel;
 
 import dev.xkmc.l2itemselector.init.data.L2Keys;
 import net.minecraft.client.Minecraft;
@@ -15,7 +15,7 @@ public class WheelHandler {
 	private static boolean held = false;
 
 	public static int wheelIndex = 0;
-	public static WheelAdaptor wheel = null;
+	public static WheelAdaptor<?> wheel = null;
 
 	public static int keyboardIndex = -1; //TODO move to somewhere else
 

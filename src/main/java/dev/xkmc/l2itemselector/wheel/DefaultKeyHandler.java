@@ -1,8 +1,6 @@
 package dev.xkmc.l2itemselector.wheel;
 
 import dev.xkmc.l2itemselector.init.data.L2Keys;
-import dev.xkmc.l2itemselector.overlay.WheelAdaptor;
-import dev.xkmc.l2itemselector.overlay.WheelHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
 
@@ -50,7 +48,7 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 	}
 
 	@Override
-	public void leftClick(WheelAdaptor wheel, Player player) {
+	public void leftClick(WheelAdaptor<?> wheel, Player player) {
 		int index = getEffectiveSelect();
 		if (index >= 0) {
 			wheel.select(index);
@@ -58,7 +56,7 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 	}
 
 	@Override
-	public void rightClick(WheelAdaptor wheel, Player player) {
+	public void rightClick(WheelAdaptor<?> wheel, Player player) {
 		var win = Minecraft.getInstance().getWindow();
 		var mh = Minecraft.getInstance().mouseHandler;
 		float mx = (float) mh.xpos() * win.getGuiScaledWidth() / win.getScreenWidth() - win.getGuiScaledWidth() / 2f;
@@ -101,7 +99,7 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 		}
 
 		@Override
-		public boolean onReleaseWithWheel(WheelAdaptor wheel, Player player, boolean longPress) {
+		public boolean onReleaseWithWheel(WheelAdaptor<?> wheel, Player player, boolean longPress) {
 			if (longPress) {
 				int index = getEffectiveSelect();
 				if (index >= 0) wheel.select(index);
@@ -111,7 +109,7 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 		}
 
 		@Override
-		public void onReleaseWithoutWheel(WheelAdaptor sel, Player player, boolean longPress) {
+		public void onReleaseWithoutWheel(WheelAdaptor<?> sel, Player player, boolean longPress) {
 
 		}
 
@@ -127,7 +125,7 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 		}
 
 		@Override
-		public boolean onReleaseWithWheel(WheelAdaptor wheel, Player player, boolean longPress) {
+		public boolean onReleaseWithWheel(WheelAdaptor<?> wheel, Player player, boolean longPress) {
 			if (longPress) {
 				int index = getEffectiveSelect();
 				if (index >= 0) wheel.select(index);
@@ -137,7 +135,7 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 		}
 
 		@Override
-		public void onReleaseWithoutWheel(WheelAdaptor wheel, Player player, boolean longPress) {
+		public void onReleaseWithoutWheel(WheelAdaptor<?> wheel, Player player, boolean longPress) {
 			int index = wheel.getIndex(player);
 			if (index >= 0) wheel.select(index);
 		}

@@ -1,8 +1,5 @@
 package dev.xkmc.l2itemselector.wheel;
 
-import dev.xkmc.l2itemselector.overlay.WheelAdaptor;
-import dev.xkmc.l2itemselector.overlay.WheelHandler;
-import dev.xkmc.l2itemselector.overlay.WheelOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
@@ -59,7 +56,7 @@ public record DefaultWheelRegionHandler() implements WheelRegionHandler {
 	}
 
 	@Override
-	public void render(GuiGraphics g, Player player, List<WheelAdaptor.Entry> list, int sel, int hover, boolean hasLeft, boolean hasRight) {
+	public void render(GuiGraphics g, Player player, List<? extends WheelAdaptor.Entry> list, int sel, int hover, boolean hasLeft, boolean hasRight) {
 		int n = list.size();
 		var region = getRegion(n);
 

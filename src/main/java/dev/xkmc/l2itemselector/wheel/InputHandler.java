@@ -1,7 +1,6 @@
 package dev.xkmc.l2itemselector.wheel;
 
 import dev.xkmc.l2itemselector.init.data.L2Keys;
-import dev.xkmc.l2itemselector.overlay.WheelHandler;
 import dev.xkmc.l2itemselector.select.SelectionRegistry;
 import net.minecraft.world.entity.player.Player;
 

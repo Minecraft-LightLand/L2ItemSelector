@@ -1,4 +1,4 @@
-package dev.xkmc.l2itemselector.overlay;
+package dev.xkmc.l2itemselector.wheel;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;

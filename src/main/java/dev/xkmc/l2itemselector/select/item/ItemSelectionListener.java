@@ -2,10 +2,11 @@ package dev.xkmc.l2itemselector.select.item;
 
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
-import dev.xkmc.l2itemselector.overlay.ItemWheelEntry;
-import dev.xkmc.l2itemselector.overlay.WheelAdaptor;
 import dev.xkmc.l2itemselector.select.ISelectionListener;
 import dev.xkmc.l2itemselector.select.SetSelectedToServer;
+import dev.xkmc.l2itemselector.wheel.ItemWheel;
+import dev.xkmc.l2itemselector.wheel.ItemWheelEntry;
+import dev.xkmc.l2itemselector.wheel.WheelAdaptor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
@@ -68,7 +69,7 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 	}
 
 	@Override
-	public Optional<WheelAdaptor> get(@Nullable Player player, int wheelIndex) {
+	public Optional<WheelAdaptor<?>> get(@Nullable Player player, int wheelIndex) {
 		if (player == null) return Optional.empty();
 		var sel = IItemSelector.getSelection(player);
 		if (sel == null) return Optional.empty();
@@ -80,7 +81,7 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 	static class ClientHandler {
 		private static final int MAX = 9;
 
-		public static Optional<WheelAdaptor> get(IItemSelector.Holder sel, int wheelIndex) {
+		public static Optional<WheelAdaptor<?>> get(IItemSelector.Holder sel, int wheelIndex) {
 			var list = sel.getDisplayList();
 			int size = list.size();
 			if (size <= 1) return Optional.empty();
@@ -97,7 +98,7 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 		}
 	}
 
-	public record Wheel(IItemSelector.Holder sel, int start, int end) implements WheelAdaptor.ItemWheel {
+	public record Wheel(IItemSelector.Holder sel, int start, int end) implements ItemWheel<ItemWheelEntry> {
 
 		@Override
 		public void select(int index) {
@@ -107,9 +108,9 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 		}
 
 		@Override
-		public List<Entry> getWheelContent() {
+		public List<ItemWheelEntry> getWheelContent() {
 			var src = sel.getDisplayList().subList(start, end);
-			var ans = new ArrayList<Entry>();
+			var ans = new ArrayList<ItemWheelEntry>();
 			for (var e : src) {
 				ans.add(new ItemWheelEntry(e));
 			}
@@ -122,8 +123,8 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 		}
 
 		@Override
-		public ItemStack getItem(int index) {
-			return sel.getDisplayList().get(start + index);
+		public ItemStack getItem(List<ItemWheelEntry> list, int index) {
+			return list.get(start + index).stack();
 		}
 
 		@Override

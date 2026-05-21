@@ -1,6 +1,5 @@
 package dev.xkmc.l2itemselector.wheel;
 
-import dev.xkmc.l2itemselector.overlay.WheelAdaptor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 
@@ -14,5 +13,5 @@ public interface WheelRegionHandler {
 
 	int getHover(int n);
 
-	void render(GuiGraphics g, Player player, List<WheelAdaptor.Entry> list,  int sel, int hover, boolean hasLeft, boolean hasRight);
+	void render(GuiGraphics g, Player player, List<? extends WheelAdaptor.Entry> list,  int sel, int hover, boolean hasLeft, boolean hasRight);
 }

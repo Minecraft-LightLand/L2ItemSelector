@@ -1,4 +1,4 @@
-package dev.xkmc.l2itemselector.overlay;
+package dev.xkmc.l2itemselector.wheel;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -42,6 +42,7 @@ public class WheelOverlay implements LayeredDraw.Layer {
 
 
 	public static void drawSideGradient(GuiGraphics g, float x0, float y0, boolean left, float width, int outerColor, int innerColor) {
+		//TODO review
 		Matrix4f mat = g.pose().last().pose();
 		VertexConsumer vc = g.bufferSource().getBuffer(Shard.GUI_GRADIENT);
 		float xOuter = left ? 0 : 2 * x0;
@@ -67,6 +68,7 @@ public class WheelOverlay implements LayeredDraw.Layer {
 
 
 	public static void drawSeparator(GuiGraphics g, float x0, float y0, float a, float rInner, float rOuter, float innerHalfW, float outerHalfW, int innerColor, int outerColor) {
+		//TODO review
 		Matrix4f mat = g.pose().last().pose();
 		VertexConsumer vc = g.bufferSource().getBuffer(Shard.GUI_FAN);
 		int seg = 8;

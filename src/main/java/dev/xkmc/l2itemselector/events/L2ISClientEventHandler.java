@@ -5,7 +5,7 @@ import dev.xkmc.l2core.util.Proxy;
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2ISConfig;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
-import dev.xkmc.l2itemselector.overlay.WheelHandler;
+import dev.xkmc.l2itemselector.wheel.WheelHandler;
 import dev.xkmc.l2itemselector.select.SelectionRegistry;
 import dev.xkmc.l2itemselector.wheel.InputHandler;
 import net.minecraft.client.Minecraft;
