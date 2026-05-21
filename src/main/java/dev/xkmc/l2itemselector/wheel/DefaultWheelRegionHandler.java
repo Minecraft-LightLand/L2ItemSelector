@@ -13,12 +13,15 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 
 	public record WheelRegion(
 			int n, float da, float a0, int x0, int y0, float r, float r0, float r1, float r2,
-
+			boolean hasLeft, boolean hasRight,
 			float mx, float my, float distSqr, int ma
 	) {
 
-		int getHover() {
-			return distSqr < r1 * r1 ? -1 : ma;
+		RegionCode getHover() {
+			int sel = distSqr < r1 * r1 ? -1 : ma;
+			boolean out = distSqr > r2 * r2;
+			int swi = out ? mx < 0 ? hasLeft ? -1 : 0 : hasRight ? 1 : 0 : 0;
+			return new RegionCode(sel, out, swi);
 		}
 
 	}
@@ -47,7 +50,7 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 
 	}
 
-	public WheelRegion getRegion(int n) {
+	public WheelRegion getRegion(int n, boolean hasLeft, boolean hasRight) {
 		float da = (float) (Math.PI * 2 / n);
 		float a0 = (float) (-Math.PI / 2);
 		var win = Minecraft.getInstance().getWindow();
@@ -55,11 +58,12 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 		float r = Math.min(x0, y0) / 1.5f;
 		float r0 = Math.max(40, r * 0.85f);
 		float r1 = r * 0.5f;
+		float r2 = r * 1.25f;
 		var mh = Minecraft.getInstance().mouseHandler;
 		var mx = (float) mh.xpos() * x0 * 2 / win.getScreenWidth() - x0;
 		var my = (float) mh.ypos() * y0 * 2 / win.getScreenHeight() - y0;
 		int ma = (int) ((Math.atan2(my, mx) - a0 + Math.PI * 2 + da / 2) / da) % n;
-		return new WheelRegion(n, da, a0, x0, y0, r, r0, r1, r * 1.25f, mx, my, mx * mx + my * my, ma);
+		return new WheelRegion(n, da, a0, x0, y0, r, r0, r1, r2, hasLeft, hasRight, mx, my, mx * mx + my * my, ma);
 	}
 
 	public ColorPalette getPalette() {
@@ -67,17 +71,17 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 	}
 
 	@Override
-	public int getHover(int n) {
-		return getRegion(n).getHover();
+	public RegionCode buildRegionCode(int n, boolean hasLeft, boolean hasRight) {
+		return getRegion(n, hasLeft, hasRight).getHover();
 	}
 
 	@Override
 	public void render(GuiGraphics g, Player player, List<? extends WheelAdaptor.Entry> list, WheelContext ctx) {
 		int n = list.size();
-		var region = getRegion(n);
+		var region = getRegion(n, ctx.left() != null, ctx.right() != null);
 		renderWheel(g, region, list, ctx.sel(), ctx.hover());
 		var canSwitch = renderSwitch(g, region, ctx.left(), ctx.right());
-		renderArc(g, region, ctx.sel(), ctx.hover(), ctx.keys().getArcColor(ctx.hover(), canSwitch));
+		renderArc(g, region, ctx.sel(), ctx.hover(), ctx.keys().getArcColor(ctx, canSwitch));
 	}
 
 	protected void renderWheel(GuiGraphics g, WheelRegion region, List<? extends WheelAdaptor.Entry> list, int sel, int hover) {

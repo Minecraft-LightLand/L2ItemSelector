@@ -42,7 +42,7 @@ public class WheelOverlay implements LayeredDraw.Layer {
 
 	public static void drawSideGradient(GuiGraphics g, boolean left, float width, int outerColor, int innerColor) {
 		if (left) fillGradient(g, 0, 0, width, g.guiHeight(), 0, outerColor, innerColor);
-		else fillGradient(g, g.guiWidth() - width, g.guiWidth(), width, g.guiHeight(), 0, innerColor, outerColor);
+		else fillGradient(g, g.guiWidth() - width, 0, g.guiWidth(), g.guiHeight(), 0, innerColor, outerColor);
 	}
 
 	private static void fillGradient(GuiGraphics g, float x0, float y0, float x1, float y1, int z, int c0, int c1) {

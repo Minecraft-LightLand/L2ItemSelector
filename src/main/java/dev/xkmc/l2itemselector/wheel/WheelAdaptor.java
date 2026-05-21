@@ -53,29 +53,36 @@ public interface WheelAdaptor<T extends WheelAdaptor.Entry> extends InputHandler
 
 	void select(int index);
 
-	default int getMouseSelect(Player player) {
+	default RegionCode getMouseSelect(Player player) {
 		int n = getWheelSize();
-		if (n <= 1) return -1;
-		return getRegion().getHover(n);
+		if (n <= 1) return new RegionCode(-1, false, 0);
+		return getContext(player, n).code();
+	}
+
+	default WheelContext getContext(Player player, int n) {
+		int sel = getIndex(player);
+		var region = getRegion();
+		var left = WheelAdaptor.get(player, WheelHandler.wheelIndex - 1);
+		var right = WheelAdaptor.get(player, WheelHandler.wheelIndex + 1);
+		if (left != null && left.equals(this)) left = null;
+		if (right != null && right.equals(this)) right = null;
+		var keys = getInputHandler();
+		var code = region.buildRegionCode(n, left != null, right != null);
+		var hover = code.sel();
+		if (hover >= 0) {
+			WheelHandler.keyboardIndex = -1;
+		} else if (WheelHandler.keyboardIndex >= 0) {
+			hover = WheelHandler.keyboardIndex;
+		}
+		return new WheelContext(region, sel, hover, code, left, right, keys);
 	}
 
 	default void renderWheel(GuiGraphics g, Player player) {
 		var list = getWheelContent();
 		int n = list.size();
 		if (n <= 1) return;
-		int sel = getIndex(player);
-		var region = getRegion();
-		int hover = region.getHover(n);
-		if (hover >= 0) {
-			WheelHandler.keyboardIndex = -1;
-		} else if (WheelHandler.keyboardIndex >= 0) {
-			hover = WheelHandler.keyboardIndex;
-		}
-		var left = WheelAdaptor.get(player, WheelHandler.wheelIndex - 1);
-		var right = WheelAdaptor.get(player, WheelHandler.wheelIndex + 1);
-		if (left != null && left.equals(this)) left = null;
-		if (right != null && right.equals(this)) right = null;
-		renderImpl(g, player, list, new WheelContext(region, sel, hover, left, right, getInputHandler()));
+
+		renderImpl(g, player, list, getContext(player, n));
 	}
 
 	default void renderImpl(GuiGraphics g, Player player, List<T> list, WheelContext ctx) {

@@ -11,7 +11,7 @@ public interface WheelRegionHandler {
 		return DefaultWheelRegionHandler.INS;
 	}
 
-	int getHover(int n);
+	RegionCode buildRegionCode(int n, boolean hasLeft, boolean hasRight);
 
 	void render(GuiGraphics g, Player player, List<? extends WheelAdaptor.Entry> list, WheelContext ctx);
 
