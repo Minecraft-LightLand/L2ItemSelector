@@ -18,7 +18,8 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 	) {
 
 		int getHover() {
-			return distSqr < r1 * r1 ? -1 : ma;
+			float deadZoneRadius = r * 0.1f;
+			return distSqr < deadZoneRadius * deadZoneRadius ? -1 : ma;
 		}
 
 	}
@@ -42,7 +43,7 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 		}
 
 		public static ColorPalette INS = new ColorPalette(
-				0xffffffff, 0x6ff4852b, 0x80ff4444, 0x800088ff
+				0xffffffff, 0xfff4852b, 0x9fff4e1d, 0x9f22a0ff
 		);
 
 	}
@@ -160,8 +161,7 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 		int hoverCol = col.hoverArc();
 
 		// render inner wheel border
-		//TODO param
-		WheelOverlay.fillFan(g, x0, y0, a0, (float) (Math.PI * 2), r1 + 1, r1, 0, 0, bg, bg);
+		WheelOverlay.fillFan(g, x0, y0, a0, (float) (Math.PI * 2), r1 * 1.017f, r1, 0, 0, bg, bg);
 
 		float arcAngle = WheelHandler.keyboardIndex >= 0
 				? a0 + da * WheelHandler.keyboardIndex
@@ -175,21 +175,20 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 		};
 
 		// render mouse arc
-		//TODO param
-		WheelOverlay.fillFan(g, x0, y0, arcAngle, da, r1 - 1.5f, r1 - 4f, 0, 0, arcColor, arcColor);
+		if (hover != -1) {
+			WheelOverlay.fillFan(g, x0, y0, arcAngle, da, r1 * 0.973f, r1 - 4f, 0, 0, arcColor, arcColor);
+		}
 
 		// render sel arc
 		if (sel >= 0 && (hover < 0 || hover != sel)) {
 			float selAngle = a0 + da * sel;
-			//TODO param
-			WheelOverlay.fillFan(g, x0, y0, selAngle, da, r1 + 2.5f, r1, 0, 0, selCol, selCol);
+			WheelOverlay.fillFan(g, x0, y0, selAngle, da, r1 * 1.044f, r1, 0, 0, selCol, selCol);
 		}
 
 		// render hover arc
 		if (hover >= 0) {
 			float sliceAngle = a0 + da * hover;
-			//TODO param
-			WheelOverlay.fillFan(g, x0, y0, sliceAngle, da, r1 + 4f, r1, 0, 0, hoverCol, hoverCol);
+			WheelOverlay.fillFan(g, x0, y0, sliceAngle, da, r1 * 1.071f, r1, 0, 0, hoverCol, hoverCol);
 		}
 
 	}
