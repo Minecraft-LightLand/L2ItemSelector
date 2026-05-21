@@ -11,13 +11,12 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 	public static final WheelRegionHandler INS = new DefaultWheelRegionHandler();
 
 	public record WheelRegion(
-			int n, float da, float a0, int x0, int y0, float r, float r0, float r1, float r2,
+			int n, float da, float a0, int x0, int y0, float r, float r0, float r1, float r2, float dead,
 			boolean hasLeft, boolean hasRight,
 			float mx, float my, float distSqr, int ma
 	) {
 
 		RegionCode getHover() {
-			var dead = r * 0.1f;
 			int sel = distSqr < dead * dead ? -1 : ma;
 			boolean out = distSqr > r2 * r2;
 			int swi = out ? mx < 0 ? hasLeft ? -1 : 0 : hasRight ? 1 : 0 : 0;
@@ -63,7 +62,8 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 		var mx = (float) mh.xpos() * x0 * 2 / win.getScreenWidth() - x0;
 		var my = (float) mh.ypos() * y0 * 2 / win.getScreenHeight() - y0;
 		int ma = (int) ((Math.atan2(my, mx) - a0 + Math.PI * 2 + da / 2) / da) % n;
-		return new WheelRegion(n, da, a0, x0, y0, r, r0, r1, r2, hasLeft, hasRight, mx, my, mx * mx + my * my, ma);
+		return new WheelRegion(n, da, a0, x0, y0, r, r0, r1, r2, r * 0.1f,
+				hasLeft, hasRight, mx, my, mx * mx + my * my, ma);
 	}
 
 	public ColorPalette getPalette() {
@@ -185,6 +185,7 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 		var a0 = region.a0();
 		var da = region.da();
 		var r1 = region.r1();
+		var d = region.dead();
 		var col = getPalette();
 
 		float arcAngle = WheelHandler.keyboardIndex >= 0
@@ -199,7 +200,7 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 		};
 
 		// render mouse arc
-		if (hover != -1) {
+		if (region.distSqr > d * d) {
 			WheelOverlay.fillFan(g, x0, y0, arcAngle, da, r1 * 0.973f, r1 - 4f, 0, 0, arcColor, arcColor);
 		}
 
