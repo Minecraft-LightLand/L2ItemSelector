@@ -89,7 +89,7 @@ public interface WheelAdaptor<T extends WheelAdaptor.Entry> extends InputHandler
 
 	interface Entry {
 
-		void render(GuiGraphics g, float x0, float y0, float ai, float r0, float r, float da, float s);
+		void render(GuiGraphics g, float x0, float y0, float ai, float r0, float r, float da, boolean s);
 
 	}
 

@@ -7,7 +7,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
-public record DefaultWheelRegionHandler() implements WheelRegionHandler {
+public class DefaultWheelRegionHandler implements WheelRegionHandler {
 
 	public static final WheelRegionHandler INS = new DefaultWheelRegionHandler();
 
@@ -18,19 +18,6 @@ public record DefaultWheelRegionHandler() implements WheelRegionHandler {
 
 		int getHover() {
 			return distSqr < r1 * r1 ? -1 : ma;
-		}
-
-		public void fillFan(GuiGraphics g, int hover, int sel) {
-			for (int i = 0; i < n; i++) {
-				float ai = a0 + da * i;
-				if (hover == i) {
-					WheelOverlay.fillFan(g, x0, y0, ai, da, r0, r1, 0, 0, 0x00f4852b, 0x6ff4852b);
-				} else if (sel == i) {
-					WheelOverlay.fillFan(g, x0, y0, ai, da, r0, r1, 0, 0, 0x00ffffff, 0x6fffffff);
-				} else {
-					WheelOverlay.fillFan(g, x0, y0, ai, da, r0, r1, 0, 0, 0x00ffffff, 0x1fffffff);
-				}
-			}
 		}
 
 	}
@@ -59,16 +46,57 @@ public record DefaultWheelRegionHandler() implements WheelRegionHandler {
 	public void render(GuiGraphics g, Player player, List<? extends WheelAdaptor.Entry> list, int sel, int hover, boolean hasLeft, boolean hasRight) {
 		int n = list.size();
 		var region = getRegion(n);
+		renderWheel(g, region, list, sel, hover);
+		var canSwitch = renderSwitch(g, region, hasLeft, hasRight);
+		renderArc(g, region, sel, hover, canSwitch);
+	}
 
+	protected void renderWheel(GuiGraphics g, WheelRegion region, List<? extends WheelAdaptor.Entry> list, int sel, int hover) {
+		int n = region.n();
 		var x0 = region.x0();
 		var y0 = region.y0();
 		var a0 = region.a0();
 		var da = region.da();
+		var r0 = region.r0();
 		var r1 = region.r1();
 		var r = region.r();
 
 		// render background
 		WheelOverlay.fillFan(g, x0, y0, a0, (float) (Math.PI * 2), r * 1.25f, 0, 0, 0, 0x00000000, 0x60000000);
+		// render wheel fan
+		for (int i = 0; i < n; i++) {
+			float ai = a0 + da * i;
+			if (hover == i) {
+				WheelOverlay.fillFan(g, x0, y0, ai, da, r0, r1, 0, 0, 0x00f4852b, 0x6ff4852b);
+			} else if (sel == i) {
+				WheelOverlay.fillFan(g, x0, y0, ai, da, r0, r1, 0, 0, 0x00ffffff, 0x6fffffff);
+			} else {
+				WheelOverlay.fillFan(g, x0, y0, ai, da, r0, r1, 0, 0, 0x00ffffff, 0x1fffffff);
+			}
+		}
+		g.flush();
+		// render separator
+		for (int i = 0; i < n; i++) {
+			float a = a0 + da * i + da / 2;
+			boolean active = hover >= 0 && (i == hover || i == (hover - 1 + n) % n);
+			int innerColor = active ? 0xfff4852b : 0xffffffff;
+			int outerColor = active ? 0x00f4852b : 0x00ffffff;
+			WheelOverlay.drawSeparator(g, x0, y0, a, r1, r * 1.25f, 0.005f, 0.0025f, innerColor, outerColor);
+		}
+		g.flush();
+		// render wheel content
+		for (int i = 0; i < n; i++) {
+			float ai = a0 + da * i;
+			list.get(i).render(g, x0, y0, ai, region.r0(), r, da, hover == i);
+		}
+		g.flush();
+	}
+
+	protected boolean renderSwitch(GuiGraphics g, WheelRegion region, boolean hasLeft, boolean hasRight) {
+
+		var x0 = region.x0();
+		var y0 = region.y0();
+		var r = region.r();
 
 		// render wheel switch
 		float switchR = r * 1.25f;
@@ -82,17 +110,6 @@ public record DefaultWheelRegionHandler() implements WheelRegionHandler {
 			g.flush();
 		}
 
-		// render wheel fan
-		region.fillFan(g, hover, sel);
-		g.flush();
-
-		// render wheel content
-		for (int i = 0; i < n; i++) {
-			float ai = a0 + da * i;
-			list.get(i).render(g, x0, y0, ai, region.r0(), r, da, hover == i ? 1.1f : 1);
-		}
-		g.flush();
-
 		// render switch hover
 		boolean canSwitch = false;
 		if (region.distSqr() > switchR * switchR) {
@@ -105,6 +122,15 @@ public record DefaultWheelRegionHandler() implements WheelRegionHandler {
 			}
 		}
 		g.flush();
+		return canSwitch;
+	}
+
+	protected void renderArc(GuiGraphics g, WheelRegion region, int sel, int hover, boolean canSwitch) {
+		var x0 = region.x0();
+		var y0 = region.y0();
+		var a0 = region.a0();
+		var da = region.da();
+		var r1 = region.r1();
 
 		// render inner wheel border
 		WheelOverlay.fillFan(g, x0, y0, a0, (float) (Math.PI * 2), r1 + 1, r1, 0, 0, 0x80ffffff, 0x80ffffff);
@@ -142,16 +168,6 @@ public record DefaultWheelRegionHandler() implements WheelRegionHandler {
 			float sliceAngle = a0 + da * hover;
 			WheelOverlay.fillFan(g, x0, y0, sliceAngle, da, r1 + 4f, r1, 0, 0, 0xfff4852b, 0xfff4852b);
 		}
-
-		// render separator
-		for (int i = 0; i < n; i++) {
-			float a = a0 + da * i + da / 2;
-			boolean active = hover >= 0 && (i == hover || i == (hover - 1 + n) % n);
-			int innerColor = active ? 0xfff4852b : 0xffffffff;
-			int outerColor = active ? 0x00f4852b : 0x00ffffff;
-			WheelOverlay.drawSeparator(g, x0, y0, a, r1, r * 1.25f, 0.005f, 0.0025f, innerColor, outerColor);
-		}
-		g.flush();
 	}
 
 }

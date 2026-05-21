@@ -8,7 +8,8 @@ import net.minecraft.world.item.ItemStack;
 public record ItemWheelEntry(ItemStack stack) implements WheelAdaptor.Entry {
 
 	@Override
-	public void render(GuiGraphics g, float x0, float y0, float ai, float r0, float r, float da, float s) {
+	public void render(GuiGraphics g, float x0, float y0, float ai, float r0, float r, float da, boolean sel) {
+		var s = sel ? 1.1f : 1;
 		s *= Math.min(r * 0.015f, da * r0 / 16f);
 
 		float dx = x0 + Mth.cos(ai) * r0;
