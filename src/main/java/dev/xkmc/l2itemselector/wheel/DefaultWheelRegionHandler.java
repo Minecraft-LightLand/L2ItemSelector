@@ -55,7 +55,7 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 		float a0 = (float) (-Math.PI / 2);
 		var win = Minecraft.getInstance().getWindow();
 		int x0 = win.getGuiScaledWidth() / 2, y0 = win.getGuiScaledHeight() / 2;
-		float r = Math.min(x0, y0) / 1.5f;
+		float r = Math.min(x0 / 1.5f, y0) / 1.5f;
 		float r0 = Math.max(40, r * 0.85f);
 		float r1 = r * 0.5f;
 		float r2 = r * 1.25f;
