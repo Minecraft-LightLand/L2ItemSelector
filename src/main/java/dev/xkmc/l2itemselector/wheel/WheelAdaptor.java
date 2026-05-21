@@ -78,7 +78,7 @@ public interface WheelAdaptor<T extends WheelAdaptor.Entry> extends InputHandler
 	}
 
 	default void renderImpl(GuiGraphics g, Player player, List<T> list, int sel, int hover, boolean hasLeft, boolean hasRight) {
-		getRegion().render(g, player, list, sel, hover, hasLeft, hasRight);
+		getRegion().render(g, player, list, getInputHandler(), sel, hover, hasLeft, hasRight);
 	}
 
 	interface Provider {

@@ -3,7 +3,6 @@ package dev.xkmc.l2itemselector.wheel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
@@ -43,12 +42,12 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 	}
 
 	@Override
-	public void render(GuiGraphics g, Player player, List<? extends WheelAdaptor.Entry> list, int sel, int hover, boolean hasLeft, boolean hasRight) {
+	public void render(GuiGraphics g, Player player, List<? extends WheelAdaptor.Entry> list, WheelKeyHandler keys, int sel, int hover, boolean hasLeft, boolean hasRight) {
 		int n = list.size();
 		var region = getRegion(n);
 		renderWheel(g, region, list, sel, hover);
 		var canSwitch = renderSwitch(g, region, hasLeft, hasRight);
-		renderArc(g, region, sel, hover, canSwitch);
+		renderArc(g, region, sel, hover, keys.getArcColor(hover, canSwitch));
 	}
 
 	protected void renderWheel(GuiGraphics g, WheelRegion region, List<? extends WheelAdaptor.Entry> list, int sel, int hover) {
@@ -125,7 +124,7 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 		return canSwitch;
 	}
 
-	protected void renderArc(GuiGraphics g, WheelRegion region, int sel, int hover, boolean canSwitch) {
+	protected void renderArc(GuiGraphics g, WheelRegion region, int sel, int hover, ArcCode arc) {
 		var x0 = region.x0();
 		var y0 = region.y0();
 		var a0 = region.a0();
@@ -134,25 +133,17 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 
 		// render inner wheel border
 		WheelOverlay.fillFan(g, x0, y0, a0, (float) (Math.PI * 2), r1 + 1, r1, 0, 0, 0x80ffffff, 0x80ffffff);
+
 		float arcAngle = WheelHandler.keyboardIndex >= 0
 				? a0 + da * WheelHandler.keyboardIndex
 				: (float) Math.atan2(region.my(), region.mx());
-		int arcColor;
-		boolean rightHeld = GLFW.glfwGetMouseButton(
-				Minecraft.getInstance().getWindow().getWindow(),
-				GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
-		boolean leftHeld = GLFW.glfwGetMouseButton(
-				Minecraft.getInstance().getWindow().getWindow(),
-				GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
-		if (leftHeld && hover >= 0) {
-			arcColor = 0xfff4852b;
-		} else if (rightHeld && canSwitch) {
-			arcColor = 0x800088ff;
-		} else if (hover < 0 || rightHeld) {
-			arcColor = 0x80ff4444;
-		} else {
-			arcColor = 0xffffffff;
-		}
+
+		int arcColor = switch (arc){
+			case SELECT -> 0xfff4852b;
+			case SWITCH -> 0x800088ff;
+			case CLOSE -> 0x80ff4444;
+			default -> 0xffffffff;
+		};
 
 		// render mouse arc
 		WheelOverlay.fillFan(g, x0, y0, arcAngle, da, r1 - 1.5f, r1 - 4f, 0, 0, arcColor, arcColor);

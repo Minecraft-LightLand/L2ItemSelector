@@ -3,6 +3,9 @@ package dev.xkmc.l2itemselector.wheel;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
+import org.lwjgl.glfw.GLFW;
+
+import static dev.xkmc.l2itemselector.wheel.ArcCode.CLOSE;
 
 public abstract class DefaultKeyHandler implements WheelKeyHandler {
 
@@ -113,6 +116,20 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 
 		}
 
+		@Override
+		public ArcCode getArcColor(int hover, boolean canSwitch) {
+			boolean rightHeld = GLFW.glfwGetMouseButton(
+					Minecraft.getInstance().getWindow().getWindow(),
+					GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
+			boolean leftHeld = GLFW.glfwGetMouseButton(
+					Minecraft.getInstance().getWindow().getWindow(),
+					GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
+			if ((rightHeld || leftHeld) && canSwitch) return ArcCode.SWITCH;
+			else if (leftHeld && hover >= 0) return ArcCode.SELECT;
+			if (hover < 0 || rightHeld) return CLOSE;
+			else return ArcCode.NONE;
+		}
+
 	}
 
 	public static class Switcher extends DefaultKeyHandler {
@@ -139,6 +156,21 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 			int index = wheel.getIndex(player);
 			if (index >= 0) wheel.select(index);
 		}
+
+		@Override
+		public ArcCode getArcColor(int hover, boolean canSwitch) {
+			boolean rightHeld = GLFW.glfwGetMouseButton(
+					Minecraft.getInstance().getWindow().getWindow(),
+					GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
+			boolean leftHeld = GLFW.glfwGetMouseButton(
+					Minecraft.getInstance().getWindow().getWindow(),
+					GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
+			if (leftHeld && hover >= 0) return ArcCode.SELECT;
+			else if (rightHeld && canSwitch) return ArcCode.SWITCH;
+			else if (hover < 0 || rightHeld) return CLOSE;
+			else return ArcCode.NONE;
+		}
+
 
 	}
 

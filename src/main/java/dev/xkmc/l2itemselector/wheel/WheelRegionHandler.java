@@ -13,5 +13,5 @@ public interface WheelRegionHandler {
 
 	int getHover(int n);
 
-	void render(GuiGraphics g, Player player, List<? extends WheelAdaptor.Entry> list,  int sel, int hover, boolean hasLeft, boolean hasRight);
+	void render(GuiGraphics g, Player player, List<? extends WheelAdaptor.Entry> list, WheelKeyHandler keys, int sel, int hover, boolean hasLeft, boolean hasRight);
 }
