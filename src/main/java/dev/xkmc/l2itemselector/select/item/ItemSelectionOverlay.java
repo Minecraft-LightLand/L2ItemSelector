@@ -5,6 +5,7 @@ import dev.xkmc.l2core.util.Proxy;
 import dev.xkmc.l2itemselector.overlay.ItemSelSideBar;
 import dev.xkmc.l2itemselector.overlay.SideBar;
 import dev.xkmc.l2itemselector.overlay.TextBox;
+import dev.xkmc.l2itemselector.wheel.WheelHandler;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -63,6 +64,7 @@ public class ItemSelectionOverlay extends ItemSelSideBar<ItemSelectionOverlay.It
 	public boolean isScreenOn() {
 		LocalPlayer player = Proxy.getClientPlayer();
 		if (player == null) return false;
+		if (WheelHandler.wheel != null) return false;
 		return ItemSelectionListener.INSTANCE.isClientActive(player);
 	}
 
