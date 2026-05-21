@@ -43,12 +43,12 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 	}
 
 	@Override
-	public void render(GuiGraphics g, Player player, List<? extends WheelAdaptor.Entry> list, WheelKeyHandler keys, int sel, int hover, @Nullable WheelAdaptor<?> left, @Nullable WheelAdaptor<?> right) {
+	public void render(GuiGraphics g, Player player, List<? extends WheelAdaptor.Entry> list, WheelContext ctx) {
 		int n = list.size();
 		var region = getRegion(n);
-		renderWheel(g, region, list, sel, hover);
-		var canSwitch = renderSwitch(g, region, left, right);
-		renderArc(g, region, sel, hover, keys.getArcColor(hover, canSwitch));
+		renderWheel(g, region, list, ctx.sel(), ctx.hover());
+		var canSwitch = renderSwitch(g, region, ctx.left(), ctx.right());
+		renderArc(g, region, ctx.sel(), ctx.hover(), ctx.keys().getArcColor(ctx.hover(), canSwitch));
 	}
 
 	protected void renderWheel(GuiGraphics g, WheelRegion region, List<? extends WheelAdaptor.Entry> list, int sel, int hover) {

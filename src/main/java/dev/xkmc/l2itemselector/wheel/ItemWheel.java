@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -18,9 +17,9 @@ public interface ItemWheel<T extends WheelAdaptor.Entry> extends WheelAdaptor<T>
 	}
 
 	@Override
-	default void renderImpl(GuiGraphics g, Player player, List<T> list, int sel, int hover, @Nullable WheelAdaptor<?> left, @Nullable WheelAdaptor<?> right) {
-		WheelAdaptor.super.renderImpl(g, player, list, sel, hover, left, right);
-		int index = hover >= 0 ? hover : sel;
+	default void renderImpl(GuiGraphics g, Player player, List<T> list, WheelContext ctx) {
+		WheelAdaptor.super.renderImpl(g, player, list, ctx);
+		int index = ctx.hover() >= 0 ? ctx.hover() : ctx.sel();
 		ItemStack stack = getItem(list, index);
 		int x0 = g.guiWidth() / 2, y0 = g.guiHeight() / 2;
 		float r = Math.min(x0, y0) / 2f;

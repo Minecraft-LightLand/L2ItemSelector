@@ -124,7 +124,7 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 
 		@Override
 		public ItemStack getItem(List<ItemWheelEntry> list, int index) {
-			return list.get(start + index).stack();
+			return list.get(index).stack();
 		}
 
 		@Override

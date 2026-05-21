@@ -64,7 +64,8 @@ public interface WheelAdaptor<T extends WheelAdaptor.Entry> extends InputHandler
 		int n = list.size();
 		if (n <= 1) return;
 		int sel = getIndex(player);
-		int hover = getRegion().getHover(n);
+		var region = getRegion();
+		int hover = region.getHover(n);
 		if (hover >= 0) {
 			WheelHandler.keyboardIndex = -1;
 		} else if (WheelHandler.keyboardIndex >= 0) {
@@ -74,11 +75,11 @@ public interface WheelAdaptor<T extends WheelAdaptor.Entry> extends InputHandler
 		var right = WheelAdaptor.get(player, WheelHandler.wheelIndex + 1);
 		if (left != null && left.equals(this)) left = null;
 		if (right != null && right.equals(this)) right = null;
-		renderImpl(g, player, list, sel, hover, left, right);
+		renderImpl(g, player, list, new WheelContext(region, sel, hover, left, right, getInputHandler()));
 	}
 
-	default void renderImpl(GuiGraphics g, Player player, List<T> list, int sel, int hover, @Nullable WheelAdaptor<?> left, @Nullable WheelAdaptor<?> right) {
-		getRegion().render(g, player, list, getInputHandler(), sel, hover, left, right);
+	default void renderImpl(GuiGraphics g, Player player, List<T> list, WheelContext ctx) {
+		ctx.region().render(g, player, list, ctx);
 	}
 
 	void renderIcon(GuiGraphics g, int x0, int y0, boolean left, float sideWidth);

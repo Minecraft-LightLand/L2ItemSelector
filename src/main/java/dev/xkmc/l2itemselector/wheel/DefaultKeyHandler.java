@@ -52,7 +52,7 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 
 	@Override
 	public void leftClick(WheelAdaptor<?> wheel, Player player) {
-		int index = getEffectiveSelect();
+		int index = getSelect(wheel, player);
 		if (index >= 0) {
 			wheel.select(index);
 		}
@@ -78,18 +78,10 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 		}
 	}
 
-	public static int getSel() {
-		var player = Minecraft.getInstance().player;
-		if (player == null) return -1;
-		if (WheelHandler.wheel == null) return -1;
-		return WheelHandler.wheel.getMouseSelect(player);
-	}
-
-	public static int getEffectiveSelect() {
-		int mouse = getSel();
+	protected int getSelect(WheelAdaptor<?> wheel, Player player) {
+		int mouse = wheel.getMouseSelect(player);
 		if (mouse >= 0) return mouse;
-		if (WheelHandler.keyboardIndex >= 0) return WheelHandler.keyboardIndex;
-		return -1;
+		return WheelHandler.keyboardIndex;
 	}
 
 	public static class Fast extends DefaultKeyHandler {
@@ -104,7 +96,7 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 		@Override
 		public boolean onReleaseWithWheel(WheelAdaptor<?> wheel, Player player, boolean longPress) {
 			if (longPress) {
-				int index = getEffectiveSelect();
+				int index = getSelect(wheel, player);
 				if (index >= 0) wheel.select(index);
 				return true;
 			}
@@ -144,7 +136,7 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 		@Override
 		public boolean onReleaseWithWheel(WheelAdaptor<?> wheel, Player player, boolean longPress) {
 			if (longPress) {
-				int index = getEffectiveSelect();
+				int index = getSelect(wheel, player);
 				if (index >= 0) wheel.select(index);
 				return true;
 			}
