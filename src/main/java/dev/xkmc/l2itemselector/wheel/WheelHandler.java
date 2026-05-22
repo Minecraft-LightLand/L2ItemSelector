@@ -15,10 +15,11 @@ public class WheelHandler {
 	private static boolean suppress = false;
 	private static boolean heldWithWheel = false;
 	static boolean held = false;
+	public static boolean wheelSelecting = false;
 	public static int wheelIndex = 0;
 	public static WheelAdaptor<?> wheel = null;
 
-	public static int keyboardIndex = -1; //TODO move to somewhere else
+	public static int keyboardIndex = -1;
 
 	public static void handleTick(@Nullable Player player) {
 		boolean holding = L2Keys.WHEEL.map.isDown();
@@ -68,6 +69,7 @@ public class WheelHandler {
 		var sel = WheelAdaptor.get(player, wheelIndex);
 		if (sel == null || sel.getWheelContent().size() <= 1 || !sel.getInputHandler().shouldOpen(longPress)) return;
 		wheel = sel;
+		sel.onOpen();
 		keyboardIndex = -1;
 		Minecraft.getInstance().mouseHandler.releaseMouse();
 	}
@@ -77,6 +79,7 @@ public class WheelHandler {
 		keyboardIndex = -1;
 		wheelIndex = 0;
 		if (wheel == null) return;
+		wheel.onClose();
 		if (player != null && Minecraft.getInstance().screen == null) {
 			Minecraft.getInstance().mouseHandler.grabMouse();
 		}

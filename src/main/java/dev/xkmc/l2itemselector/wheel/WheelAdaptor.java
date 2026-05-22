@@ -19,7 +19,9 @@ public interface WheelAdaptor<T extends WheelAdaptor.Entry> extends InputHandler
 	@Nullable
 	static WheelAdaptor<?> get(@Nullable Player player, int wheelIndex, boolean main) {
 		if (player == null) return null;
+		WheelHandler.wheelSelecting = true;
 		var sel = SelectionRegistry.getClientActiveListener(player);
+		WheelHandler.wheelSelecting = false;
 		if (sel.isEmpty()) return null;
 		if (!(sel.get() instanceof Provider pvd)) return null;
 		return pvd.get(player, wheelIndex, main).orElse(null);
@@ -95,6 +97,18 @@ public interface WheelAdaptor<T extends WheelAdaptor.Entry> extends InputHandler
 	}
 
 	void renderIcon(GuiGraphics g, int x0, int y0, boolean left, float sideWidth, boolean hover);
+
+	default void onClose() {
+
+	}
+
+	default void onOpen() {
+
+	}
+
+	default void onSwitchedAway() {
+
+	}
 
 	interface Provider {
 

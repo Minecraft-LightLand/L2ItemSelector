@@ -29,6 +29,7 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 				if (WheelAdaptor.get(player, target) != null) {
 					WheelHandler.wheelIndex = target;
 					WheelHandler.keyboardIndex = -1;
+					if (WheelHandler.wheel != null) WheelHandler.wheel.onSwitchedAway();
 				}
 			}
 			case RIGHT -> {
@@ -36,6 +37,7 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 				if (WheelAdaptor.get(player, target) != null) {
 					WheelHandler.wheelIndex = target;
 					WheelHandler.keyboardIndex = -1;
+					if (WheelHandler.wheel != null) WheelHandler.wheel.onSwitchedAway();
 				}
 			}
 		}
@@ -61,6 +63,7 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 			case SWITCH -> {
 				WheelHandler.wheelIndex += code.switcher();
 				WheelHandler.keyboardIndex = -1;
+				wheel.onSwitchedAway();
 			}
 			case SEL_CLOSE -> {
 				wheel.select(code.sel());
