@@ -76,14 +76,25 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 
 	@Override
 	public void leftClick(WheelAdaptor<?> wheel, Player player) {
-		var ctx = wheel.getContext(player, wheel.getWheelSize());
+		var ctx = resolveDeadZone(wheel.getContext(player, wheel.getWheelSize()));
 		execute(wheel, player, getAction(ctx, ActionInput.LEFT), ctx.code());
 	}
 
 	@Override
 	public void rightClick(WheelAdaptor<?> wheel, Player player) {
-		var ctx = wheel.getContext(player, wheel.getWheelSize());
+		var ctx = resolveDeadZone(wheel.getContext(player, wheel.getWheelSize()));
 		execute(wheel, player, getAction(ctx, ActionInput.RIGHT), ctx.code());
+	}
+
+	private WheelContext resolveDeadZone(WheelContext ctx) {
+		var code = ctx.code();
+		if (code.sel() >= 0) return ctx;
+		int target = ctx.hover() >= 0 ? ctx.hover() : ctx.sel();
+		if (target >= 0) {
+			code = new RegionCode(target, code.outside(), code.switcher());
+			return new WheelContext(ctx.region(), ctx.sel(), ctx.hover(), code, ctx.left(), ctx.right(), ctx.keys());
+		}
+		return ctx;
 	}
 
 	@Override
