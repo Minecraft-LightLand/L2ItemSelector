@@ -39,6 +39,11 @@ public abstract class IItemSelector {
 		public int getSelHash() {
 			return selector.getSelHash(stack);
 		}
+
+		@Override
+		public boolean equals(Object obj) {
+			return obj instanceof Holder other && selector.equals(other.selector);
+		}
 	}
 
 	private static final HashMap<Identifier, IItemSelector> LIST = new HashMap<>();
@@ -74,6 +79,11 @@ public abstract class IItemSelector {
 
 	public IItemSelector(Identifier id) {
 		this.id = id;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof IItemSelector other && other.id.equals(id);
 	}
 
 	public abstract boolean test(ItemStack stack);

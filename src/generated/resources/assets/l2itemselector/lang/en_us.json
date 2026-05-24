@@ -21,5 +21,7 @@
   "l2itemselector.configuration.selectionScrollRequireShift": "Scroll for selection only when pressing [Hold Selection]",
   "l2itemselector.configuration.selectionScrollRequireShift.tooltip": "",
   "l2itemselector.configuration.title": "L2ItemSelector Configuration",
+  "l2itemselector.configuration.useFastSwitchWheel": "Use alternative wheel that click wheel key switches item",
+  "l2itemselector.configuration.useFastSwitchWheel.tooltip": "",
   "l2itemselector.title": "L2ItemSelector"
 }

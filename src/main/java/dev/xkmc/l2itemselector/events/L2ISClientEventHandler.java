@@ -4,8 +4,9 @@ import com.mojang.blaze3d.platform.InputConstants;
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2ISConfig;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
-import dev.xkmc.l2itemselector.overlay.WheelHandler;
+import dev.xkmc.l2itemselector.wheel.WheelHandler;
 import dev.xkmc.l2itemselector.select.SelectionRegistry;
+import dev.xkmc.l2itemselector.wheel.InputHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.player.Player;
@@ -33,7 +34,7 @@ public class L2ISClientEventHandler {
 	public static void inputEvent(GenericKeyEvent event) {
 		LocalPlayer player = Minecraft.getInstance().player;
 		if (player == null) return;
-		var sel = SelectionRegistry.getClientActiveListener(player);
+		var sel = InputHandler.getHandler(player);
 		if (sel.isEmpty()) return;
 		for (L2Keys k : L2Keys.values()) {
 			if (event.test(k.map.getKey()) &&
@@ -76,7 +77,7 @@ public class L2ISClientEventHandler {
 		scroll -= i;
 		LocalPlayer player = Minecraft.getInstance().player;
 		if (player == null) return;
-		var sel = SelectionRegistry.getClientActiveListener(player);
+		var sel = InputHandler.getHandler(player);
 		if (sel.isEmpty()) return;
 		if (!sel.get().scrollBypassShift() &&
 				L2ISConfig.CLIENT.selectionScrollRequireShift.get() &&
@@ -85,5 +86,4 @@ public class L2ISClientEventHandler {
 			event.setCanceled(true);
 		}
 	}
-
 }

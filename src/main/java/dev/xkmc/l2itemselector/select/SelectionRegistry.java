@@ -17,8 +17,8 @@ public class SelectionRegistry {
 	/**
 	 * -5000: Artifact Selection
 	 * -3000: Numeric Display
+	 * -2000: ItemSelection
 	 * -1000: Backpack Selection
-	 * 0: ItemSelection
 	 */
 	public static synchronized void register(int priority, ISelectionListener sel) {
 		REGISTRY_MAP.put(sel.getID(), sel);

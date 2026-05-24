@@ -15,6 +15,8 @@ public class L2ISConfig {
 		public final ModConfigSpec.BooleanValue selectionDisplayRequireShift;
 		public final ModConfigSpec.BooleanValue selectionScrollRequireShift;
 
+		public final ModConfigSpec.BooleanValue useFastSwitchWheel;
+
 
 		Client(Builder builder) {
 			markL2();
@@ -29,6 +31,9 @@ public class L2ISConfig {
 			selectionScrollRequireShift = builder
 					.text("Scroll for selection only when pressing [Hold Selection]")
 					.define("selectionScrollRequireShift", true);
+			useFastSwitchWheel = builder
+					.text("Use alternative wheel that click wheel key switches item")
+					.define("useFastSwitchWheel", false);
 		}
 
 	}
