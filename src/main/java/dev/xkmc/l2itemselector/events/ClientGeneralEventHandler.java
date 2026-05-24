@@ -3,6 +3,7 @@ package dev.xkmc.l2itemselector.events;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
+import dev.xkmc.l2itemselector.wheel.WheelHandler;
 import dev.xkmc.l2itemselector.select.SelectionRegistry;
 import dev.xkmc.l2library.init.L2LibraryConfig;
 import dev.xkmc.l2library.util.Proxy;
@@ -18,10 +19,20 @@ import net.minecraftforge.fml.common.Mod;
 public class ClientGeneralEventHandler {
 
 	@SubscribeEvent
+	public static void clientTick(ClientTickEvent.Pre event) {
+		if (Minecraft.getInstance().level == null) {
+			WheelHandler.handleTick(null);
+			return;
+		}
+		Player player = Minecraft.getInstance().player;
+		WheelHandler.handleTick(player);
+	}
+
+	@SubscribeEvent
 	public static void inputEvent(GenericKeyEvent event) {
 		LocalPlayer player = Proxy.getClientPlayer();
 		if (player == null) return;
-		var sel = SelectionRegistry.getClientActiveListener(player);
+		var sel = InputHandler.getHandler(player);
 		if (sel.isEmpty()) return;
 		for (L2Keys k : L2Keys.values()) {
 			if (event.test(k.map.getKey()) &&
@@ -34,6 +45,7 @@ public class ClientGeneralEventHandler {
 
 	@SubscribeEvent
 	public static void mouseEvent(InputEvent.MouseButton.Pre event) {
+		if (WheelHandler.handleClick(event)) return;
 		MinecraftForge.EVENT_BUS.post(new GenericKeyEvent(e -> e.getType() == InputConstants.Type.MOUSE && e.getValue() == event.getButton(), event.getAction()));
 	}
 
@@ -62,7 +74,7 @@ public class ClientGeneralEventHandler {
 		scroll -= i;
 		LocalPlayer player = Proxy.getClientPlayer();
 		if (player == null) return;
-		var sel = SelectionRegistry.getClientActiveListener(player);
+		var sel = InputHandler.getHandler(player);
 		if (sel.isEmpty()) return;
 		if (!sel.get().scrollBypassShift() &&
 				L2LibraryConfig.CLIENT.selectionScrollRequireShift.get() &&
@@ -71,5 +83,4 @@ public class ClientGeneralEventHandler {
 			event.setCanceled(true);
 		}
 	}
-
 }

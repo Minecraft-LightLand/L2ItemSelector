@@ -51,6 +51,11 @@ public abstract class IItemSelector {
 		this.id = id;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof IItemSelector other && other.id.equals(id);
+	}
+
 	public abstract boolean test(ItemStack stack);
 
 	@ServerOnly
@@ -65,6 +70,11 @@ public abstract class IItemSelector {
 			ItemStack stack = getList().get(index).copy();
 			stack.setCount(sender.getOffhandItem().getCount());
 			sender.setItemInHand(InteractionHand.OFF_HAND, stack);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			return obj instanceof Holder other && selector.equals(other.selector);
 		}
 	}
 

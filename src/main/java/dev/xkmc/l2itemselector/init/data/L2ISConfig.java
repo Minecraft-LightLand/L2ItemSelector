@@ -9,17 +9,21 @@ import org.apache.commons.lang3.tuple.Pair;
 public class L2ISConfig {
 
 	public static class Client {
+		public final ForgeConfigSpec.BooleanValue useFastSwitchWheel;
 
 		Client(ForgeConfigSpec.Builder builder) {
+			useFastSwitchWheel = builder
+					.comment("Use alternative wheel that click wheel key switches item")
+					.define("useFastSwitchWheel", false);
 		}
 
 	}
 
 	public static class Common {
 
-		Common(ForgeConfigSpec.Builder builder) {
 
-		}
+		Client(ForgeConfigSpec.Builder builder) {
+			}
 
 	}
 

@@ -69,6 +69,7 @@ public class ItemSelectionOverlay extends ItemSelSideBar<ItemSelectionOverlay.It
 	public boolean isScreenOn() {
 		LocalPlayer player = Proxy.getClientPlayer();
 		if (player == null) return false;
+		if (WheelHandler.wheel != null) return false;
 		return ItemSelectionListener.INSTANCE.isClientActive(player);
 	}
 

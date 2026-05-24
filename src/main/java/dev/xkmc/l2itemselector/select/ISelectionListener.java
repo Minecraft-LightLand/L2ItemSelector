@@ -2,22 +2,19 @@ package dev.xkmc.l2itemselector.select;
 
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
+import dev.xkmc.l2itemselector.wheel.InputHandler;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.function.BooleanSupplier;
 
-public interface ISelectionListener {
+public interface ISelectionListener extends InputHandler {
 
 	ResourceLocation getID();
 
 	boolean isClientActive(Player player);
 
 	void handleServerSetSelection(SetSelectedToServer setSelectedToServer, Player sender);
-
-	boolean handleClientScroll(int diff, Player player);
-
-	void handleClientKey(L2Keys k, Player player);
 
 	boolean handleClientNumericKey(int i, BooleanSupplier consumeClick);
 
@@ -27,15 +24,6 @@ public interface ISelectionListener {
 
 	default void toServer(int slot) {
 		L2ItemSelector.PACKET_HANDLER.toServer(new SetSelectedToServer(this, slot));
-	}
-
-	default boolean isHoldKeyDown(Player player) {
-		return player.isShiftKeyDown();
-	}
-
-	default boolean handleClientScroll(int diff, double delta, Player player) {
-		if (diff == 0) return true;
-		return handleClientScroll((int) Math.signum(diff), player);
 	}
 
 }
