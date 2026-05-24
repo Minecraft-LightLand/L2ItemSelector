@@ -19,6 +19,10 @@ public interface WheelAdaptor<T extends WheelAdaptor.Entry> extends InputHandler
 	@Nullable
 	static WheelAdaptor<?> get(@Nullable Player player, int wheelIndex, boolean main) {
 		if (player == null) return null;
+		if (WheelHandler.wheel instanceof PersistentWheel<?> pers) {
+			var ans = pers.getAtIndex(player, wheelIndex, main);
+			if (ans != null) return ans;
+		}
 		WheelHandler.wheelSelecting = true;
 		var sel = SelectionRegistry.getClientActiveListener(player);
 		WheelHandler.wheelSelecting = false;
