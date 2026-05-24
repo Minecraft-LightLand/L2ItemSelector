@@ -1,7 +1,7 @@
 package dev.xkmc.l2itemselector.wheel;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
@@ -76,7 +76,7 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 	}
 
 	@Override
-	public void render(GuiGraphics g, Player player, List<? extends WheelAdaptor.Entry> list, WheelContext ctx) {
+	public void render(GuiGraphicsExtractor g, Player player, List<? extends WheelAdaptor.Entry> list, WheelContext ctx) {
 		int n = list.size();
 		var region = getRegion(n, ctx.left() != null, ctx.right() != null);
 		var arc = ctx.keys().getArcColor(ctx);
@@ -85,7 +85,7 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 		renderArc(g, region, ctx.sel(), ctx.hover(), arc);
 	}
 
-	protected void renderWheel(GuiGraphics g, WheelRegion region, List<? extends WheelAdaptor.Entry> list, int sel, int hover, ArcCode arc) {
+	protected void renderWheel(GuiGraphicsExtractor g, WheelRegion region, List<? extends WheelAdaptor.Entry> list, int sel, int hover, ArcCode arc) {
 		int n = region.n();
 		var x0 = region.x0();
 		var y0 = region.y0();
@@ -100,7 +100,7 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 			hover = -1;
 
 		// render background
-		WheelOverlay.fillFan(g, x0, y0, a0, (float) (Math.PI * 2), r2, 0, 0, 0, col.wheelBg0(), col.wheelBg1());
+		WheelOverlay.fillFan(g, x0, y0, a0, (float) (Math.PI * 2), r2, 0, 0, col.wheelBg0(), col.wheelBg1());
 		// render wheel fan
 		for (int i = 0; i < n; i++) {
 			float ai = a0 + da * i;
@@ -112,7 +112,7 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 				}
 			} else if (sel == i) color = col.fanSelBg();
 			else color = col.fanBg();
-			WheelOverlay.fillFan(g, x0, y0, ai, da, r0, r1, 0, 0, color & 0x00ffffff, color);
+			WheelOverlay.fillFan(g, x0, y0, ai, da, r0, r1, 0, color & 0x00ffffff, color);
 		}
 		// render separator
 		for (int i = 0; i < n; i++) {
@@ -134,22 +134,22 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 		int hoverCol = col.hoverArc();
 
 		// render inner wheel border
-		WheelOverlay.fillFan(g, x0, y0, a0, (float) (Math.PI * 2), r1 * 1.017f, r1, 0, 0, bg, bg);
+		WheelOverlay.fillFan(g, x0, y0, a0, (float) (Math.PI * 2), r1 * 1.017f, r1, 0, bg, bg);
 
 		// render sel arc
 		if (sel >= 0 && (hover < 0 || hover != sel)) {
 			float selAngle = a0 + da * sel;
-			WheelOverlay.fillFan(g, x0, y0, selAngle, da, r1 * 1.044f, r1, 0, 0, selCol, selCol);
+			WheelOverlay.fillFan(g, x0, y0, selAngle, da, r1 * 1.044f, r1, 0, selCol, selCol);
 		}
 
 		// render hover arc
 		if (hover >= 0) {
 			float sliceAngle = a0 + da * hover;
-			WheelOverlay.fillFan(g, x0, y0, sliceAngle, da, r1 * 1.071f, r1, 0, 0, hoverCol, hoverCol);
+			WheelOverlay.fillFan(g, x0, y0, sliceAngle, da, r1 * 1.071f, r1, 0, hoverCol, hoverCol);
 		}
 	}
 
-	protected void renderSwitch(GuiGraphics g, WheelRegion region, WheelContext ctx, ArcCode arc) {
+	protected void renderSwitch(GuiGraphicsExtractor g, WheelRegion region, WheelContext ctx, ArcCode arc) {
 		var code = ctx.code();
 		var x0 = region.x0();
 		var y0 = region.y0();
@@ -179,7 +179,7 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 		}
 	}
 
-	protected void renderArc(GuiGraphics g, WheelRegion region, int sel, int hover, ArcCode arc) {
+	protected void renderArc(GuiGraphicsExtractor g, WheelRegion region, int sel, int hover, ArcCode arc) {
 		var x0 = region.x0();
 		var y0 = region.y0();
 		var a0 = region.a0();
@@ -201,7 +201,7 @@ public class DefaultWheelRegionHandler implements WheelRegionHandler {
 
 		// render mouse arc
 		if (region.distSqr > d * d) {
-			WheelOverlay.fillFan(g, x0, y0, arcAngle, da, r1 * 0.973f, r1 - 4f, 0, 0, arcColor, arcColor);
+			WheelOverlay.fillFan(g, x0, y0, arcAngle, da, r1 * 0.973f, r1 - 4f, 0, arcColor, arcColor);
 		}
 
 

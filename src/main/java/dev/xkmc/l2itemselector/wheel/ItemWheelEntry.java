@@ -18,7 +18,7 @@ public record ItemWheelEntry(ItemStack stack) implements WheelAdaptor.Entry {
 		g.pose().translate(dx, dy);
 		g.pose().scale(s, s);
 		g.item(stack, -8, -8);
-		g.renderItemDecorations(Minecraft.getInstance().font, stack, -8, -8);
+		g.itemDecorations(Minecraft.getInstance().font, stack, -8, -8);
 		g.pose().popMatrix();
 	}
 

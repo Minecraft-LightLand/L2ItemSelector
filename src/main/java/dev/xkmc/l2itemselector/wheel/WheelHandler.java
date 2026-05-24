@@ -17,6 +17,8 @@ public class WheelHandler {
 	static boolean held = false;
 	public static boolean wheelSelecting = false;
 	public static int wheelIndex = 0;
+
+	@Nullable
 	public static WheelAdaptor<?> wheel = null;
 
 	public static int keyboardIndex = -1;

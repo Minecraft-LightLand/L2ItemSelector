@@ -2,7 +2,7 @@ package dev.xkmc.l2itemselector.wheel;
 
 import dev.xkmc.l2itemselector.init.data.L2Keys;
 import dev.xkmc.l2itemselector.select.SelectionRegistry;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -84,7 +84,7 @@ public interface WheelAdaptor<T extends WheelAdaptor.Entry> extends InputHandler
 		return new WheelContext(region, sel, hover, code, left, right, keys);
 	}
 
-	default void renderWheel(GuiGraphics g, Player player) {
+	default void renderWheel(GuiGraphicsExtractor g, Player player) {
 		var list = getWheelContent();
 		int n = list.size();
 		if (n <= 1) return;
@@ -92,11 +92,11 @@ public interface WheelAdaptor<T extends WheelAdaptor.Entry> extends InputHandler
 		renderImpl(g, player, list, getContext(player, n));
 	}
 
-	default void renderImpl(GuiGraphics g, Player player, List<T> list, WheelContext ctx) {
+	default void renderImpl(GuiGraphicsExtractor g, Player player, List<T> list, WheelContext ctx) {
 		ctx.region().render(g, player, list, ctx);
 	}
 
-	void renderIcon(GuiGraphics g, int x0, int y0, boolean left, float sideWidth, boolean hover);
+	void renderIcon(GuiGraphicsExtractor g, int x0, int y0, boolean left, float sideWidth, boolean hover);
 
 	default void onClose() {
 
@@ -118,7 +118,7 @@ public interface WheelAdaptor<T extends WheelAdaptor.Entry> extends InputHandler
 
 	interface Entry {
 
-		void render(GuiGraphics g, float x0, float y0, float ai, float r0, float r, float da, boolean s);
+		void render(GuiGraphicsExtractor g, float x0, float y0, float ai, float r0, float r, float da, boolean s);
 
 	}
 

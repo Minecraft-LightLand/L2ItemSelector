@@ -89,10 +89,10 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 	@Override
 	public ArcCode getArcColor(WheelContext ctx) {
 		boolean rightHeld = GLFW.glfwGetMouseButton(
-				Minecraft.getInstance().getWindow().getWindow(),
+				Minecraft.getInstance().getWindow().handle(),
 				GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
 		boolean leftHeld = GLFW.glfwGetMouseButton(
-				Minecraft.getInstance().getWindow().getWindow(),
+				Minecraft.getInstance().getWindow().handle(),
 				GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
 		var action = getAction(ctx, leftHeld ? ActionInput.LEFT : rightHeld ? ActionInput.RIGHT : ActionInput.RELEASE);
 		return switch (action) {
