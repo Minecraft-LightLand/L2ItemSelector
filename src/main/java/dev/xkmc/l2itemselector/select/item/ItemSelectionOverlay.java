@@ -2,6 +2,7 @@ package dev.xkmc.l2itemselector.select.item;
 
 import com.mojang.datafixers.util.Pair;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
+import dev.xkmc.l2itemselector.wheel.WheelHandler;
 import dev.xkmc.l2library.base.overlay.ItemSelSideBar;
 import dev.xkmc.l2library.base.overlay.SideBar;
 import dev.xkmc.l2library.base.overlay.TextBox;

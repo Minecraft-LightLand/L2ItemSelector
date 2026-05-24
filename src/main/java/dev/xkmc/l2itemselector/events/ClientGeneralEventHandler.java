@@ -3,15 +3,18 @@ package dev.xkmc.l2itemselector.events;
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
-import dev.xkmc.l2itemselector.wheel.WheelHandler;
 import dev.xkmc.l2itemselector.select.SelectionRegistry;
+import dev.xkmc.l2itemselector.wheel.InputHandler;
+import dev.xkmc.l2itemselector.wheel.WheelHandler;
 import dev.xkmc.l2library.init.L2LibraryConfig;
 import dev.xkmc.l2library.util.Proxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -19,7 +22,8 @@ import net.minecraftforge.fml.common.Mod;
 public class ClientGeneralEventHandler {
 
 	@SubscribeEvent
-	public static void clientTick(ClientTickEvent.Pre event) {
+	public static void clientTick(TickEvent.ClientTickEvent event) {
+		if (event.phase != TickEvent.Phase.START) return;
 		if (Minecraft.getInstance().level == null) {
 			WheelHandler.handleTick(null);
 			return;

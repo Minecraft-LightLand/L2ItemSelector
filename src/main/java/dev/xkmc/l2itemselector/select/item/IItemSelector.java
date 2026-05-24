@@ -71,11 +71,6 @@ public abstract class IItemSelector {
 			stack.setCount(sender.getOffhandItem().getCount());
 			sender.setItemInHand(InteractionHand.OFF_HAND, stack);
 		}
-
-		@Override
-		public boolean equals(Object obj) {
-			return obj instanceof Holder other && selector.equals(other.selector);
-		}
 	}
 
 	public abstract int getIndex(Player player);

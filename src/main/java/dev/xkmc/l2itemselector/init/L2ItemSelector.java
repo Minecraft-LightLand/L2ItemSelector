@@ -45,7 +45,11 @@ public class L2ItemSelector {
 		var gen = event.getGenerator();
 		var server = event.includeServer();
 		var pvd = event.getLookupProvider();
-		gen.addProvider(server, new L2ISConfigGen(gen, pvd, MODID));
+		gen.addProvider(server, new L2ISConfigGen(gen, MODID));
+	}
+
+	public static ResourceLocation loc(String id) {
+		return new ResourceLocation(MODID, id);
 	}
 
 }

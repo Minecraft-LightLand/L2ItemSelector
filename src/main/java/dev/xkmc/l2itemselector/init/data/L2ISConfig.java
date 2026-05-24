@@ -9,6 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 public class L2ISConfig {
 
 	public static class Client {
+
 		public final ForgeConfigSpec.BooleanValue useFastSwitchWheel;
 
 		Client(ForgeConfigSpec.Builder builder) {
@@ -21,9 +22,8 @@ public class L2ISConfig {
 
 	public static class Common {
 
-
-		Client(ForgeConfigSpec.Builder builder) {
-			}
+		Common(ForgeConfigSpec.Builder builder) {
+		}
 
 	}
 

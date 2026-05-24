@@ -1,3 +1,4 @@
-// 1.20.1	2024-06-01T16:16:42.197706	Registrate Provider for l2itemselector [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
-9adb2e1cbc3ddd3e5b8ed227a95faa95faddd26e assets/l2itemselector/lang/en_ud.json
-53fb7886a0d81c07122cf44ca75965bce6074ca8 assets/l2itemselector/lang/en_us.json
+// 1.20.1	2026-05-24T17:16:30.961147	Registrate Provider for l2itemselector [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
+61118f2201d8b8b8ea9af0b00e73670183f4ad87 assets/l2itemselector/lang/en_ud.json
+aa4e59879a425935e96bfb6bc84d4261387ae4b9 assets/l2itemselector/lang/en_us.json
+1b1163ece60c159ad94cd55a40184b6c7caa0c5d data/l2itemselector/tags/items/selectable.json

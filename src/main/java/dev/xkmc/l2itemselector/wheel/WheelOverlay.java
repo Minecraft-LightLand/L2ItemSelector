@@ -3,18 +3,18 @@ package dev.xkmc.l2itemselector.wheel;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.Mth;
+import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import org.joml.Matrix4f;
 
-public class WheelOverlay implements LayeredDraw.Layer {
+public class WheelOverlay implements IGuiOverlay {
 
 	@Override
-	public void render(GuiGraphics g, DeltaTracker pt) {
+	public void render(ForgeGui gui, GuiGraphics g, float pt, int sw, int sh) {
 		var player = Minecraft.getInstance().player;
 		if (player == null) return;
 		if (WheelHandler.wheel == null) return;
@@ -34,10 +34,10 @@ public class WheelOverlay implements LayeredDraw.Layer {
 			float a = ai + da / 2 - da / n * i;
 			float x2 = x1 + Mth.cos(a) * r1;
 			float y2 = y1 + Mth.sin(a) * r1;
-			vc.addVertex(mat, x2, y2, pZ).setColor(c1);
+			vc.vertex(mat, x2, y2, pZ).color(c1).endVertex();
 			float x3 = x1 + Mth.cos(a) * r0;
 			float y3 = y1 + Mth.sin(a) * r0;
-			vc.addVertex(mat, x3, y3, pZ).setColor(c0);
+			vc.vertex(mat, x3, y3, pZ).color(c0).endVertex();
 		}
 	}
 
@@ -50,10 +50,10 @@ public class WheelOverlay implements LayeredDraw.Layer {
 	private static void fillGradient(GuiGraphics g, float x0, float y0, float x1, float y1, int z, int c0, int c1) {
 		Matrix4f matrix4f = g.pose().last().pose();
 		var vc = g.bufferSource().getBuffer(RenderType.gui());
-		vc.addVertex(matrix4f, x0, y0, z).setColor(c0);
-		vc.addVertex(matrix4f, x0, y1, z).setColor(c0);
-		vc.addVertex(matrix4f, x1, y1, z).setColor(c1);
-		vc.addVertex(matrix4f, x1, y0, z).setColor(c1);
+		vc.vertex(matrix4f, x0, y0, z).color(c0).endVertex();
+		vc.vertex(matrix4f, x0, y1, z).color(c0).endVertex();
+		vc.vertex(matrix4f, x1, y1, z).color(c1).endVertex();
+		vc.vertex(matrix4f, x1, y0, z).color(c1).endVertex();
 	}
 
 
@@ -78,8 +78,8 @@ public class WheelOverlay implements LayeredDraw.Layer {
 			float rx = x0 + Mth.cos(a + halfW) * r;
 			float ry = y0 + Mth.sin(a + halfW) * r;
 
-			vc.addVertex(mat, lx, ly, 0).setColor(color);
-			vc.addVertex(mat, rx, ry, 0).setColor(color);
+			vc.vertex(mat, lx, ly, 0).color(color).endVertex();
+			vc.vertex(mat, rx, ry, 0).color(color).endVertex();
 		}
 	}
 
@@ -91,7 +91,7 @@ public class WheelOverlay implements LayeredDraw.Layer {
 		}
 
 		public static final RenderType GUI_FAN = create("gui_fan",
-				DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLE_STRIP, 786432,
+				DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.TRIANGLE_STRIP, 786432, false, false,
 				RenderType.CompositeState.builder()
 						.setShaderState(RENDERTYPE_GUI_SHADER)
 						.setTransparencyState(TRANSLUCENT_TRANSPARENCY)

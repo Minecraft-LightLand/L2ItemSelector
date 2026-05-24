@@ -3,7 +3,7 @@ package dev.xkmc.l2itemselector.wheel;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.client.event.InputEvent;
+import net.minecraftforge.client.event.InputEvent;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 

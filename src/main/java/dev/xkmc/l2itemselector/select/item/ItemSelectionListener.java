@@ -73,7 +73,7 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 		if (player == null) return Optional.empty();
 		var sel = IItemSelector.getSelection(player);
 		if (sel == null) return Optional.empty();
-		if (sel.selector() instanceof WheelAdaptor.Provider pvd)
+		if (sel instanceof WheelAdaptor.Provider pvd)
 			return pvd.get(player, wheelIndex, main);
 		return ClientHandler.get(sel, wheelIndex);
 	}
@@ -81,7 +81,7 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 	static class ClientHandler {
 		private static final int MAX = 9;
 
-		public static Optional<WheelAdaptor<?>> get(IItemSelector.Holder sel, int wheelIndex) {
+		public static Optional<WheelAdaptor<?>> get(IItemSelector sel, int wheelIndex) {
 			var list = sel.getDisplayList();
 			int size = list.size();
 			if (size <= 1) return Optional.empty();
@@ -98,13 +98,13 @@ public class ItemSelectionListener implements ISelectionListener, WheelAdaptor.P
 		}
 	}
 
-	public record Wheel(IItemSelector.Holder sel, int start, int end) implements ItemWheel<ItemWheelEntry> {
+	public record Wheel(IItemSelector sel, int start, int end) implements ItemWheel<ItemWheelEntry> {
 
 		@Override
 		public void select(int index) {
 			int globalIndex = start + index;
-			L2ItemSelector.PACKET_HANDLER.toServer(SetSelectedToServer.of(globalIndex,
-					ItemSelectionListener.INSTANCE.getID()));
+			L2ItemSelector.PACKET_HANDLER.toServer(new SetSelectedToServer(
+					ItemSelectionListener.INSTANCE, globalIndex));
 		}
 
 		@Override
