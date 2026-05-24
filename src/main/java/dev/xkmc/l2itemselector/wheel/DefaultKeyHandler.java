@@ -186,7 +186,7 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 		public ActionCode getAction(WheelContext ctx, ActionInput input) {
 			return switch (input) {
 				case RELEASE -> ctx.hover() >= 0 ? ActionCode.SELECT : ActionCode.CLOSE;
-				case LEFT -> ctx.code().sel() >= 0 ? ActionCode.SELECT : ActionCode.NONE;
+				case LEFT -> ctx.hover() >= 0 ? ActionCode.SELECT : ActionCode.NONE;
 				case RIGHT -> ctx.code().switcher() != 0 ? ActionCode.SWITCH : ActionCode.CLOSE;
 			};
 		}
