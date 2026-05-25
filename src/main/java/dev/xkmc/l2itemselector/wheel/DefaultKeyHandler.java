@@ -66,10 +66,14 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 				wheel.onSwitchedAway();
 			}
 			case SEL_CLOSE -> {
-				wheel.select(ctx.hover());
+				int target = ctx.hover() >= 0 ? ctx.hover() : wheel.getIndex(player);
+				wheel.select(target);
 				WheelHandler.disableWheel(player);
 			}
-			case SELECT -> wheel.select(ctx.hover());
+			case SELECT -> {
+				int target = ctx.hover() >= 0 ? ctx.hover() : wheel.getIndex(player);
+				wheel.select(target);
+			}
 			case CLOSE -> WheelHandler.disableWheel(player);
 		}
 	}
@@ -77,13 +81,13 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 	@Override
 	public void leftClick(WheelAdaptor<?> wheel, Player player) {
 		var ctx = wheel.getContext(player, wheel.getWheelSize());
-		execute(wheel, player, getAction(ctx, ActionInput.LEFT), ctx);
+		execute(wheel, player, getAction(ctx, ActionInput.LEFT, wheel, player), ctx);
 	}
 
 	@Override
 	public void rightClick(WheelAdaptor<?> wheel, Player player) {
 		var ctx = wheel.getContext(player, wheel.getWheelSize());
-		execute(wheel, player, getAction(ctx, ActionInput.RIGHT), ctx);
+		execute(wheel, player, getAction(ctx, ActionInput.RIGHT, wheel, player), ctx);
 	}
 
 	@Override
@@ -94,7 +98,7 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 		boolean leftHeld = GLFW.glfwGetMouseButton(
 				Minecraft.getInstance().getWindow().getWindow(),
 				GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
-		var action = getAction(ctx, leftHeld ? ActionInput.LEFT : rightHeld ? ActionInput.RIGHT : ActionInput.RELEASE);
+		var action = getAction(ctx, leftHeld ? ActionInput.LEFT : rightHeld ? ActionInput.RIGHT : ActionInput.RELEASE, null, null);
 		return switch (action) {
 			case SWITCH -> SWITCH;
 			case SELECT, SEL_CLOSE -> leftHeld || rightHeld ? SELECT : NONE;
@@ -103,7 +107,7 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 		};
 	}
 
-	public abstract ActionCode getAction(WheelContext ctx, ActionInput input);
+	public abstract ActionCode getAction(WheelContext ctx, ActionInput input, WheelAdaptor<?> wheel, Player player);
 
 	public enum ActionInput {
 		RELEASE, LEFT, RIGHT
@@ -146,11 +150,11 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 		}
 
 		@Override
-		public ActionCode getAction(WheelContext ctx, ActionInput input) {
+		public ActionCode getAction(WheelContext ctx, ActionInput input, WheelAdaptor<?> wheel, Player player) {
 			return switch (input) {
 				case RELEASE -> ctx.hover() >= 0 ? ActionCode.SELECT : ActionCode.CLOSE;
 				case LEFT -> ctx.code().switcher() != 0 ? ActionCode.SWITCH :
-						(ctx.code().sel() >= 0 ? ActionCode.SELECT : ActionCode.NONE).closeIf(!WheelHandler.held);
+						(ctx.code().sel() >= 0 || (wheel != null && wheel.getIndex(player) >= 0) ? ActionCode.SELECT : ActionCode.NONE).closeIf(!WheelHandler.held);
 				case RIGHT -> ctx.code().sel() >= 0 && !ctx.code().outside() ? ActionCode.SEL_CLOSE : ActionCode.CLOSE;
 			};
 		}
@@ -183,10 +187,10 @@ public abstract class DefaultKeyHandler implements WheelKeyHandler {
 		}
 
 		@Override
-		public ActionCode getAction(WheelContext ctx, ActionInput input) {
+		public ActionCode getAction(WheelContext ctx, ActionInput input, WheelAdaptor<?> wheel, Player player) {
 			return switch (input) {
 				case RELEASE -> ctx.hover() >= 0 ? ActionCode.SELECT : ActionCode.CLOSE;
-				case LEFT -> ctx.hover() >= 0 ? ActionCode.SELECT : ActionCode.NONE;
+				case LEFT -> ctx.hover() >= 0 || (wheel != null && wheel.getIndex(player) >= 0) ? ActionCode.SELECT : ActionCode.NONE;
 				case RIGHT -> ctx.code().switcher() != 0 ? ActionCode.SWITCH : ActionCode.CLOSE;
 			};
 		}
