@@ -1,5 +1,5 @@
 {
-  "key.categories.l2mods": "莱特兰通用按键",
+  "key.category.l2itemselector.l2mods": "莱特兰通用按键",
   "key.l2mods.down": "选择-下",
   "key.l2mods.left": "选择-左",
   "key.l2mods.right": "选择-右",
@@ -8,8 +8,6 @@
   "key.l2mods.alt": "切换选择器",
   "key.l2mods.shift": "显示选择器",
   "key.l2mods.wheel": "轮盘切换",
-  "l2itemselector.configuration.infoAlpha": "信息框背景透明度",
-  "l2itemselector.configuration.infoAlpha.tooltip": "不透明为1\n范围: 0.0 ~ 1.0",
   "l2itemselector.configuration.infoAnchor": "信息框垂直对齐",
   "l2itemselector.configuration.infoAnchor.tooltip": "可选值：\n- TOP (顶部对齐)\n- CENTER (居中)\n- BOTTOM (底部对齐)",
   "l2itemselector.configuration.infoMaxWidth": "信息框最大宽度",

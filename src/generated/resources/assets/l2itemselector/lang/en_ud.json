@@ -1,5 +1,5 @@
 {
-  "key.categories.l2mods": "spoW ᄅꞀ ɹoɟ spuıqʎǝʞ",
+  "key.category.l2itemselector.l2mods": "spoW ᄅꞀ ɹoɟ spuıqʎǝʞ",
   "key.l2mods.alt": "ɹoʇɔǝןǝS ǝʌıʇɐuɹǝʇןⱯ",
   "key.l2mods.down": "uʍoᗡ",
   "key.l2mods.left": "ʇɟǝꞀ",
@@ -8,8 +8,6 @@
   "key.l2mods.swap": "dɐʍS",
   "key.l2mods.up": "d∩",
   "key.l2mods.wheel": "ןǝǝɥM",
-  "l2itemselector.configuration.infoAlpha": "ʎɔuǝɹɐdsuɐɹʇ punoɹbʞɔɐq xoq oɟuI",
-  "l2itemselector.configuration.infoAlpha.tooltip": "0˙Ɩ ~ 0˙0 :ǝbuɐᴚ \nϛ˙0 :ʇןnɐɟǝᗡ \n˙ǝnbɐdo suɐǝɯ Ɩ ˙ʎɐןɹǝʌo xoq ʇxǝʇ oɟuı ɹoɟ ʎɔuǝɹɐdsuɐɹʇ punoɹbʞɔɐᗺ",
   "l2itemselector.configuration.infoAnchor": "ʇuǝɯubıןɐ ןɐɔıʇɹǝʌ xoq oɟuI",
   "l2itemselector.configuration.infoAnchor.tooltip": "WO⟘⟘Oᗺ 'ᴚƎ⟘NƎƆ 'ԀO⟘ :sǝnןɐΛ pǝʍoןןⱯ",
   "l2itemselector.configuration.infoMaxWidth": "ɥʇpıʍ xɐɯ xoq oɟuI",

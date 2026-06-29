@@ -2,6 +2,7 @@ package dev.xkmc.l2itemselector.init.data;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.xkmc.l2itemselector.init.L2ItemSelector;
+import dev.xkmc.l2itemselector.init.L2ItemSelectorClient;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
@@ -37,6 +38,6 @@ public enum L2Keys {
 		this.id = id;
 		this.def = def;
 		this.key = key;
-		this.map = new KeyMapping(id, key, new KeyMapping.Category(L2ItemSelector.loc("l2mods")));
+		this.map = new KeyMapping(id, key, L2ItemSelectorClient.CATEGORY);
 	}
 }

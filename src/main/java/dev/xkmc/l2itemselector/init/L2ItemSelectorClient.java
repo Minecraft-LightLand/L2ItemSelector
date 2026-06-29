@@ -8,6 +8,7 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.xkmc.l2itemselector.init.data.L2Keys;
 import dev.xkmc.l2itemselector.wheel.WheelOverlay;
 import dev.xkmc.l2itemselector.select.item.ItemSelectionOverlay;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -19,6 +20,8 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
 @EventBusSubscriber(value = Dist.CLIENT, modid = L2ItemSelector.MODID)
 public class L2ItemSelectorClient {
+
+	public static final KeyMapping.Category CATEGORY = new KeyMapping.Category(L2ItemSelector.loc("l2mods"));
 
 	public static final RenderPipeline GUI_STRIP = RenderPipeline
 			.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)

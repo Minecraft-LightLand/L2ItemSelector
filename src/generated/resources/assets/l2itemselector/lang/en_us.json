@@ -1,5 +1,5 @@
 {
-  "key.categories.l2mods": "Keybinds for L2 Mods",
+  "key.category.l2itemselector.l2mods": "Keybinds for L2 Mods",
   "key.l2mods.alt": "Alternative Selector",
   "key.l2mods.down": "Down",
   "key.l2mods.left": "Left",
@@ -8,8 +8,6 @@
   "key.l2mods.swap": "Swap",
   "key.l2mods.up": "Up",
   "key.l2mods.wheel": "Wheel",
-  "l2itemselector.configuration.infoAlpha": "Info box background transparency",
-  "l2itemselector.configuration.infoAlpha.tooltip": "Background transparency for info text box overlay. 1 means opaque.\n Default: 0.5\n Range: 0.0 ~ 1.0",
   "l2itemselector.configuration.infoAnchor": "Info box vertical alignment",
   "l2itemselector.configuration.infoAnchor.tooltip": "Allowed Values: TOP, CENTER, BOTTOM",
   "l2itemselector.configuration.infoMaxWidth": "Info box max width",

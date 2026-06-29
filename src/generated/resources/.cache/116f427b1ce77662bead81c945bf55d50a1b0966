@@ -1,4 +1,4 @@
-// 26.1.2	2026-05-09T11:53:32.362828	Registrate Provider for l2itemselector [Registries, Data Maps, , Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Model Definitions - l2itemselector, Lang (en_us/en_ud), generic_client_provider, Tags (mob_effect), Tags (attribute)]
-cab59e2355192e7e7e8dfd0cb6f6240658aab81f assets/l2itemselector/lang/en_ud.json
-42664a20378870453cc27b7dfce506e64d10f631 assets/l2itemselector/lang/en_us.json
+// 26.1.2	2026-06-28T21:31:52.111562	Registrate Provider for l2itemselector [Registries, Data Maps, , Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Model Definitions - l2itemselector, Lang (en_us/en_ud), generic_client_provider, Tags (mob_effect), Tags (attribute)]
+f17c004c88d97ff02afdf1b9e6bbb7fc7aaa5423 assets/l2itemselector/lang/en_ud.json
+fd73ad2a61357351585aa358db0f6e252718a1a8 assets/l2itemselector/lang/en_us.json
 1b1163ece60c159ad94cd55a40184b6c7caa0c5d data/l2itemselector/tags/item/selectable.json
